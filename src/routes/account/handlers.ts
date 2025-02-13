@@ -1,21 +1,26 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { AccountService } from '../../services/account.service'
-import { Account } from '../../types'
+
+interface FastifyInstanceWithConfig extends FastifyInstance {
+  config: any
+}
 
 export class AccountHandlers {
   private accountService: AccountService
 
-  constructor(private app: FastifyInstance) {
+  constructor(private app: FastifyInstanceWithConfig) {
     this.accountService = new AccountService(app)
   }
 
   async createAccount(
-    request: FastifyRequest<{ Body: Pick<Account, 'name' | 'email'> }>,
+    request: FastifyRequest<{ Body: { name: string; email: string; password: string } }>,
     reply: FastifyReply
   ) {
     const account = await this.accountService.createAccount({
-      ...request.body,
-      balance: 0
+      name: request.body.name,
+      email: request.body.email,
+      password: request.body.password,
+      balance: 0,
     })
     return reply.status(201).send(account)
   }
@@ -27,4 +32,4 @@ export class AccountHandlers {
     const account = await this.accountService.getAccount(request.params.id)
     return reply.send(account)
   }
-} 
+}

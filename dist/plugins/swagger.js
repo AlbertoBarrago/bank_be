@@ -12,7 +12,7 @@ async function configureSwagger(app) {
             info: {
                 title: 'Fastify Bank Service API',
                 description: 'Banking service API documentation',
-                version: '1.0.0'
+                version: '1.0.0',
             },
             tags: [
                 { name: 'accounts', description: 'Account related endpoints' },

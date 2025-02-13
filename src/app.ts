@@ -1,4 +1,3 @@
-// External dependencies
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
@@ -6,16 +5,13 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-// Internal plugins
 import { configureAuth } from './plugins/auth';
 import { configureDb } from './plugins/db';
 import { configureSwagger } from './plugins/swagger';
 
-// Routes
 import accountRoutes from './routes/account';
 import transactionRoutes from './routes/transaction';
 
-// Configuration
 import { config } from './config/config';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -80,5 +76,5 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  start();
-} 
+  start()
+}

@@ -4,20 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildApp = buildApp;
-// External dependencies
 const fastify_1 = __importDefault(require("fastify"));
 const cors_1 = __importDefault(require("@fastify/cors"));
 const jwt_1 = __importDefault(require("@fastify/jwt"));
 const helmet_1 = __importDefault(require("@fastify/helmet"));
 const rate_limit_1 = __importDefault(require("@fastify/rate-limit"));
-// Internal plugins
 const auth_1 = require("./plugins/auth");
 const db_1 = require("./plugins/db");
 const swagger_1 = require("./plugins/swagger");
-// Routes
 const account_1 = __importDefault(require("./routes/account"));
 const transaction_1 = __importDefault(require("./routes/transaction"));
-// Configuration
 const config_1 = require("./config/config");
 async function buildApp() {
     const app = (0, fastify_1.default)({

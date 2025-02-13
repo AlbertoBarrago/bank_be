@@ -1,17 +1,10 @@
-import { FastifyInstance, FastifyRequest } from 'fastify'
-import { TransactionService } from '../../services/transaction.service'
-import { createTransactionSchema } from './schemas'
-import { Transaction } from '../../types'
-
-type CreateTransactionBody = Pick<Transaction, 'type' | 'amount' | 'fromAccountId' | 'toAccountId'>
+import {FastifyInstance} from 'fastify'
+import {createTransactionSchema} from './schemas'
+import {Transaction} from '../../types'
+import {TransactionHandlers} from "./handlers";
 
 export default async function transactionRoutes(app: FastifyInstance) {
-  const transactionService = new TransactionService(app)
+    const handlers = new TransactionHandlers(app)
 
-  app.post('/', { schema: createTransactionSchema }, async (request: FastifyRequest<{
-    Body: CreateTransactionBody
-  }>, reply) => {
-    const transaction = await transactionService.createTransaction(request.body)
-    return reply.status(201).send(transaction)
-  })
+    app.post('/', {schema: createTransactionSchema}, handlers.createTransaction.bind(handlers))
 } 

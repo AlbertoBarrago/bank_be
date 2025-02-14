@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { AccountService } from '../../services/account.service'
-import { Account } from '../../types'
 
 interface FastifyInstanceWithConfig extends FastifyInstance {
   config: any
@@ -10,6 +9,7 @@ export class AuthHandlers {
   private accountService: AccountService
 
   constructor(private app: FastifyInstance) {
+    // @ts-ignore
     this.accountService = new AccountService(app)
   }
 

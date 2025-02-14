@@ -15,7 +15,7 @@ async function configureSwagger(app) {
                 version: '1.0.0',
             },
             tags: [
-                { name: 'accounts', description: 'Account related endpoints' },
+                { name: 'auth', description: 'Authentication related endpoints' },
                 { name: 'transactions', description: 'Transaction related endpoints' }
             ],
             schemes: ['http', 'https'],

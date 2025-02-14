@@ -1,6 +1,7 @@
 import {FastifyInstance} from 'fastify'
 import {DatabaseError, NotFoundError, ValidationError} from '../utils/errors'
 import {AuthService} from './auth.service'
+import {Prisma, Account as PrismaAccount} from "@prisma/client";
 
 interface Account {
     id: string
@@ -10,6 +11,7 @@ interface Account {
     password: string
     createdAt: Date
     updatedAt: Date
+    status: string
 }
 
 interface FastifyInstanceWithConfig extends FastifyInstance {
@@ -33,12 +35,13 @@ export class AccountService {
     }): Promise<Omit<Account, "password">> {
       try {
         const hashedPassword = await this.authService.hashPassword(data.password)
-          return await this.app.db.account.create({
+          const account = await this.app.db.account.create({
             data: {
                 name: data.name,
                 email: data.email,
                 password: hashedPassword,
                 balance: data.balance,
+                status: data.status,
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -47,10 +50,15 @@ export class AccountService {
                 name: true,
                 email: true,
                 balance: true,
+                status: true,
                 createdAt: true,
                 updatedAt: true
             }
         })
+        return {
+          ...account,
+          balance: Number(account.balance)
+        }
       } catch (error) {
         throw new DatabaseError('Failed to create account')
       }
@@ -61,7 +69,10 @@ export class AccountService {
       if (!account) {
         throw new NotFoundError('Account not found')
       }
-      return account
+      return {
+        ...account,
+        balance: Number(account.balance)
+      }
     }
 
     async updateBalance(id: string, amount: number): Promise<Account> {
@@ -73,19 +84,26 @@ export class AccountService {
       }
 
       try {
-        return await this.app.db.account.update({
+        const updatedAccount = await this.app.db.account.update({
           where: {id},
           data: {
             balance: newBalance,
             updatedAt: new Date()
           }
         })
+        return {
+          ...updatedAccount,
+          balance: Number(updatedAccount.balance)
+        }
       } catch (error) {
         throw new DatabaseError('Failed to update balance')
       }
     }
 
-    async login(email: string, password: string): Promise<{ token: string, account: Omit<Account, 'password'> }> {
+    async login(email: string, password: string): Promise<{
+        token: string;
+        account: Omit<PrismaAccount, "password">
+    }> {
       const account = await this.app.db.account.findUnique({
         where: { email },
         select: {
@@ -94,6 +112,7 @@ export class AccountService {
           email: true,
           balance: true,
           password: true,
+          status: true,
           createdAt: true,
           updatedAt: true
         }
@@ -111,6 +130,12 @@ export class AccountService {
       const token = this.authService.generateToken(account.id)
 
       const { password: _, ...accountWithoutPassword } = account
-      return { token, account: accountWithoutPassword }
+      return {
+        token,
+        account: {
+          ...accountWithoutPassword,
+          balance: Number(accountWithoutPassword.balance)
+        }
+      }
     }
 }

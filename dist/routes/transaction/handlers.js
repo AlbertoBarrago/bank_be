@@ -9,6 +9,7 @@ class TransactionHandlers {
     }
     async createTransaction(request, reply) {
         const transaction = await this.transactionsService.createTransaction({
+            id: request.body.id,
             type: request.body.type,
             amount: request.body.amount,
         });

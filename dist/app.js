@@ -12,7 +12,7 @@ const rate_limit_1 = __importDefault(require("@fastify/rate-limit"));
 const auth_1 = require("./plugins/auth");
 const db_1 = require("./plugins/db");
 const swagger_1 = require("./plugins/swagger");
-const account_1 = __importDefault(require("./routes/account"));
+const auth_2 = __importDefault(require("./routes/auth"));
 const transaction_1 = __importDefault(require("./routes/transaction"));
 const config_1 = require("./config/config");
 async function buildApp() {
@@ -46,8 +46,8 @@ async function buildApp() {
     await (0, auth_1.configureAuth)(app);
     await (0, db_1.configureDb)(app);
     // Register routes
-    await app.register(account_1.default, { prefix: '/api/v1/accounts' });
     await app.register(transaction_1.default, { prefix: '/api/v1/transactions' });
+    await app.register(auth_2.default, { prefix: '/api/v1/auth' });
     // Global error handler
     app.setErrorHandler((error, request, reply) => {
         app.log.error(error);

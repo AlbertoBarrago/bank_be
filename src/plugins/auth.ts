@@ -3,8 +3,8 @@ import { AuthenticationError } from '../utils/errors'
 
 export async function configureAuth(app: FastifyInstance) {
   const publicPaths = [
-    '/api/v1/auth/register',
-    '/api/v1/auth/login',
+    '/api/v1/account/register',
+    '/api/v1/account/login',
     '/api/health',
     '/docs'
   ]

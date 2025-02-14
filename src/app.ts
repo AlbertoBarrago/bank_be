@@ -9,7 +9,7 @@ import { configureAuth } from './plugins/auth';
 import { configureDb } from './plugins/db';
 import { configureSwagger } from './plugins/swagger';
 
-import authRoutes from './routes/auth';
+import authRoutes from './routes/account';
 import transactionRoutes from './routes/transaction';
 
 import { config } from './config/config';
@@ -49,7 +49,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   // Register routes
   await app.register(transactionRoutes, { prefix: '/api/v1/transactions' });
-  await app.register(authRoutes, { prefix: '/api/v1/auth' });
+  await app.register(authRoutes, { prefix: '/api/v1/account' });
 
 
   // Global error handler

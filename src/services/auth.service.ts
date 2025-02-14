@@ -1,16 +1,12 @@
-import { FastifyInstance } from 'fastify'
+import {FastifyInstance} from 'fastify'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import {config} from "../config/config";
 
-// Define interface to extend FastifyInstance
-interface FastifyInstanceWithConfig extends FastifyInstance {
-  config: {
-    JWT_SECRET: string
-  }
-}
 
 export class AuthService {
-    constructor(private app: FastifyInstanceWithConfig) {}
+    constructor(private app: FastifyInstance) {
+    }
 
     async hashPassword(password: string): Promise<string> {
         const salt = await bcrypt.genSalt(12)
@@ -22,7 +18,7 @@ export class AuthService {
     }
 
     generateToken(accountId: string): string {
-        return jwt.sign({ accountId }, this.app.config.JWT_SECRET, {
+        return jwt.sign({accountId}, config.jwt.secret, {
             expiresIn: '24h'
         })
     }

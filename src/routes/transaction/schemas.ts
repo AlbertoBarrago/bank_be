@@ -1,9 +1,11 @@
-import { Type } from '@sinclair/typebox'
-import { TransactionSchema } from '../../types'
+import {Type} from '@sinclair/typebox'
+import {TransactionSchema} from '../../types'
 
 export const createTransactionSchema = {
-  body: Type.Pick(TransactionSchema, ['type', 'amount', 'fromAccountId', 'toAccountId']),
-  response: {
-    201: TransactionSchema
-  }
+    tags: ['transactions'],
+    body: Type.Pick(TransactionSchema, ['type', 'amount', 'fromAccountId', 'toAccountId']),
+    response: {
+        201: TransactionSchema
+    },
+    security: [{bearerAuth: []}]
 } 

@@ -1,7 +1,7 @@
 import {FastifyInstance} from 'fastify'
 import {DatabaseError, NotFoundError, ValidationError} from '../utils/errors'
 import {AuthService} from './auth.service'
-import {Prisma, Account as PrismaAccount} from "@prisma/client";
+import {Account as PrismaAccount} from "@prisma/client";
 
 interface Account {
     id: string
@@ -22,7 +22,7 @@ interface FastifyInstanceWithConfig extends FastifyInstance {
 export class AccountService {
     private authService: AuthService
 
-    constructor(private app: FastifyInstanceWithConfig) {
+    constructor(private app: FastifyInstance) {
       this.authService = new AuthService(app)
     }
 

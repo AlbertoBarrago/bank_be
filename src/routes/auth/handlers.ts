@@ -9,7 +9,6 @@ export class AuthHandlers {
   private accountService: AccountService
 
   constructor(private app: FastifyInstance) {
-    // @ts-ignore
     this.accountService = new AccountService(app)
   }
 

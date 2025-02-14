@@ -8,4 +8,38 @@ export const createTransactionSchema = {
         201: TransactionSchema
     },
     security: [{bearerAuth: []}]
-} 
+}
+
+export const getTransactionSchema = {
+    tags: ['transactions'],
+    params: Type.Object({
+        id: Type.String({format: 'uuid'})
+    }),
+    response: {
+        200: TransactionSchema
+    },
+    security: [{bearerAuth: []}]
+}
+
+export const updateTransactionSchema = {
+    tags: ['transactions'],
+    params: Type.Object({
+        id: Type.String({format: 'uuid'})
+    }),
+    body: Type.Partial(TransactionSchema),
+    response: {
+        200: TransactionSchema
+    },
+    security: [{bearerAuth: []}]
+}
+
+export const deleteTransactionSchema = {
+    tags: ['transactions'],
+    params: Type.Object({
+        id: Type.String({format: 'uuid'})
+    }),
+    response: {
+        204: Type.Null()
+    },
+    security: [{bearerAuth: []}]
+}

@@ -14,11 +14,31 @@ export class TransactionHandlers {
 
     async createTransaction(request: FastifyRequest<{ Body: CreateTransactionBody }>,
                             reply: FastifyReply) {
-      const transaction = await this.transactionsService.createTransaction({
-          id: request.body.id,
-          type: request.body.type,
-          amount: request.body.amount,
-      });
+        const transaction = await this.transactionsService.createTransaction({
+            id: request.body.id,
+            type: request.body.type,
+            amount: request.body.amount,
+        });
         return reply.status(201).send(transaction);
     }
+
+    async getTransactionById(request: FastifyRequest<{ Params: { id: string } }>,
+                             reply: FastifyReply) {
+        const transaction = await this.transactionsService.getTransactionById(request.params.id);
+        return reply.send(transaction);
+    }
+
+    async updateTransaction(request: FastifyRequest<{ Params: { id: string }, Body: Partial<Transaction> }>,
+                            reply: FastifyReply) {
+        const transaction = await this.transactionsService.updateTransaction(request.params.id, request.body);
+        return reply.send(transaction);
+    }
+
+    async deleteTransaction(request: FastifyRequest<{ Params: { id: string } }>,
+                            reply: FastifyReply) {
+        const transaction = await this.transactionsService.deleteTransaction(request.params.id);
+        return reply.send(transaction);
+    }
+
+
 }

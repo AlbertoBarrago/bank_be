@@ -1,5 +1,5 @@
 import {FastifyInstance} from 'fastify'
-import {DatabaseError, NotFoundError, ValidationError} from '../utils/errors'
+import {AuthorizationError, DatabaseError, NotFoundError, ValidationError} from '../utils/errors'
 import {AuthorizationService} from './authorization.service'
 import {Account as PrismaAccount, Prisma} from "@prisma/client";
 
@@ -69,31 +69,6 @@ export class AccountService {
       }
     }
 
-    async updateBalance(id: string, amount: number): Promise<Account> {
-      const account = await this.getAccount(id)
-      const newBalance = account.balance + amount
-
-      if (newBalance < 0) {
-        throw new ValidationError('Insufficient funds')
-      }
-
-      try {
-        const updatedAccount = await this.app.db.account.update({
-          where: {id},
-          data: {
-            balance: newBalance,
-            updatedAt: new Date()
-          }
-        })
-        return {
-          ...updatedAccount,
-          balance: Number(updatedAccount.balance)
-        }
-      } catch (error) {
-        throw new DatabaseError('Failed to update balance')
-      }
-    }
-
     async login(email: string, password: string): Promise<{
         token: string;
         account: Omit<PrismaAccount, "password">
@@ -113,12 +88,12 @@ export class AccountService {
       })
 
       if (!account) {
-        throw new Error('Invalid credentials')
+        throw new AuthorizationError('Insufficient funds')
       }
 
       const isValid = await this.authService.verifyPassword(password, account.password)
       if (!isValid) {
-        throw new Error('Invalid credentials')
+        throw new AuthorizationError('Invalid credentials')
       }
 
       const token = this.authService.generateToken(account.id)

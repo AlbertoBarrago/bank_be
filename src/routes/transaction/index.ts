@@ -1,6 +1,5 @@
 import {FastifyInstance} from 'fastify'
 import {createTransactionSchema} from './schemas'
-import {Transaction} from '../../types'
 import {TransactionHandlers} from "./handlers";
 
 export default async function transactionRoutes(app: FastifyInstance) {

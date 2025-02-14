@@ -18,6 +18,7 @@ model Account {
   balance   Decimal  @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  status    String
 }
 
 model Transaction {

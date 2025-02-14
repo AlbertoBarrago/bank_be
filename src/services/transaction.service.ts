@@ -15,7 +15,11 @@ interface Transaction {
 export class TransactionService {
   constructor(private app: FastifyInstance) {}
 
-  async createTransaction(data: TransactionInput): Promise<Transaction> {
+  async createTransaction(data: {
+      id: string;
+      type: "deposit" | "withdrawal" | "transfer";
+      amount: number
+  }): Promise<Transaction> {
     try {
       return await this.app.db.transaction.create({
         data: {

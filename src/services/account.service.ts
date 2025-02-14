@@ -24,7 +24,13 @@ export class AccountService {
       this.authService = new AuthService(app)
     }
 
-    async createAccount(data: Omit<Account, 'id' | 'createdAt' | 'updatedAt'>): Promise<Omit<Account, 'password'>> {
+    async createAccount(data: {
+        name: string;
+        email: string;
+        password: string;
+        balance: number;
+        status: string
+    }): Promise<Omit<Account, "password">> {
       try {
         const hashedPassword = await this.authService.hashPassword(data.password)
           return await this.app.db.account.create({

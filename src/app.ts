@@ -1,4 +1,3 @@
-// External dependencies
 import fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
@@ -6,16 +5,13 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
-// Internal plugins
 import { configureAuth } from './plugins/auth';
 import { configureDb } from './plugins/db';
 import { configureSwagger } from './plugins/swagger';
 
-// Routes
-import accountRoutes from './routes/account';
+import authRoutes from './routes/account';
 import transactionRoutes from './routes/transaction';
 
-// Configuration
 import { config } from './config/config';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -52,8 +48,9 @@ export async function buildApp(): Promise<FastifyInstance> {
   await configureDb(app);
 
   // Register routes
-  await app.register(accountRoutes, { prefix: '/api/v1/accounts' });
   await app.register(transactionRoutes, { prefix: '/api/v1/transactions' });
+  await app.register(authRoutes, { prefix: '/api/v1/account' });
+
 
   // Global error handler
   app.setErrorHandler((error, request, reply) => {
@@ -80,5 +77,5 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  start();
-} 
+  start()
+}

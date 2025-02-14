@@ -33,5 +33,4 @@ export const TransactionSchema = Type.Object({
   updatedAt: Type.String({ format: 'date-time' })
 })
 
-export type Account = Static<typeof AccountSchema>
-export type Transaction = Static<typeof TransactionSchema> 
+export type Transaction = Static<typeof TransactionSchema>

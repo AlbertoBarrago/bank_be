@@ -14,7 +14,6 @@ export async function configureDb(app: FastifyInstance) {
   // Add prisma to fastify instance
   app.decorate('db', prisma)
 
-  // Close DB connection when server closes
   app.addHook('onClose', async () => {
     await prisma.$disconnect()
   })

@@ -1,28 +1,19 @@
-import { Type } from '@sinclair/typebox';
-import env from 'env-var';
+import dotenv from 'dotenv'
 
-const envSchema = Type.Object({
-  NODE_ENV: Type.String(),
-  PORT: Type.Number(),
-  HOST: Type.String(),
-  JWT_SECRET: Type.String(),
-  DATABASE_URL: Type.String(),
-  CORS_ORIGIN: Type.String(),
-  LOG_LEVEL: Type.String(),
-});
+dotenv.config()
 
 export const config = {
-  env: env.get('NODE_ENV').required().asString(),
-  port: env.get('PORT').required().asPortNumber(),
-  host: env.get('HOST').required().asString(),
+  env: process.env.NODE_ENV || 'development',
+  port: parseInt(process.env.PORT || '3000'),
+  host: process.env.HOST || 'localhost',
   jwt: {
-    secret: env.get('JWT_SECRET').required().asString(),
+    secret: process.env.JWT_SECRET || 'your-secret-key',
   },
   db: {
-    url: env.get('DATABASE_URL').required().asString(),
+    url: process.env.DATABASE_URL,
   },
   cors: {
-    origin: env.get('CORS_ORIGIN').required().asString(),
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   },
-  logLevel: env.get('LOG_LEVEL').default('info').asString(),
-}; 
+  logLevel: process.env.LOG_LEVEL || 'info',
+}

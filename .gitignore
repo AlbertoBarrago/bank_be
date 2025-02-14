@@ -143,5 +143,7 @@ dist
 
 # Dist
 /dist
+.idea
+.tap
 
 # End of https://www.toptal.com/developers/gitignore/api/node

@@ -1,9 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { AccountService } from '../../services/account.service'
 
-interface FastifyInstanceWithConfig extends FastifyInstance {
-  config: any
-}
 
 export class AuthHandlers {
   private accountService: AccountService

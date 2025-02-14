@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import {config} from "../config/config";
 
 
-export class AuthService {
+export class AuthorizationService {
     constructor(private app: FastifyInstance) {
     }
 

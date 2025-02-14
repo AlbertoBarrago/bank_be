@@ -1,7 +1,7 @@
 import {FastifyInstance} from 'fastify'
 import {DatabaseError, NotFoundError, ValidationError} from '../utils/errors'
-import {AuthService} from './auth.service'
-import {Account as PrismaAccount} from "@prisma/client";
+import {AuthorizationService} from './authorization.service'
+import {Account as PrismaAccount, Prisma} from "@prisma/client";
 
 interface Account {
     id: string
@@ -13,17 +13,11 @@ interface Account {
     updatedAt: Date
     status: string
 }
-
-interface FastifyInstanceWithConfig extends FastifyInstance {
-    config: any
-    db: any
-}
-
 export class AccountService {
-    private authService: AuthService
+    private authService: AuthorizationService
 
     constructor(private app: FastifyInstance) {
-      this.authService = new AuthService(app)
+      this.authService = new AuthorizationService(app)
     }
 
     async createAccount(data: {
@@ -134,7 +128,7 @@ export class AccountService {
         token,
         account: {
           ...accountWithoutPassword,
-          balance: Number(accountWithoutPassword.balance)
+          balance: new Prisma.Decimal(accountWithoutPassword.balance)
         }
       }
     }

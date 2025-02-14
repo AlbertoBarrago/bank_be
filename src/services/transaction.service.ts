@@ -1,11 +1,6 @@
 import {FastifyInstance} from 'fastify'
 import {DatabaseError} from '../utils/errors'
 
-interface TransactionInput {
-  amount: number
-  type: string
-}
-
 interface Transaction {
   id: string
   amount: number

@@ -1,5 +1,4 @@
 import { test } from 'tap'
-// @ts-ignore
 import { build } from '../helper'
 import { FastifyInstance } from 'fastify'
 

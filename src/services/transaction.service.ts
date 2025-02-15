@@ -5,6 +5,20 @@ interface Transaction {
   id: string;
   amount: number;
   type: string;
+  status: string;
+  fromAccountId?: string;
+  toAccountId?: string;
+  accountId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface TransactionUpdate {
+  amount?: number;
+  type?: "deposit" | "withdrawal" | "transfer";
+  status?: string;
+  fromAccountId?: string | null;
+  toAccountId?: string | null;
 }
 
 export class TransactionService {
@@ -16,44 +30,67 @@ export class TransactionService {
     amount: number;
   }): Promise<Transaction> {
     try {
-      return await this.app.db.transaction.create({
+      const transaction = await this.app.db.transaction.create({
         data: {
           amount: data.amount,
           type: data.type,
-          account: {
-            connect: {
-              id: data.id,
-            },
-          },
+          status: 'completed',
+          accountId: data.id,
+          fromAccountId: data.type === 'transfer' ? data.id : null,
+          toAccountId: data.type === 'transfer' ? data.id : null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       });
+
+      return {
+        ...transaction,
+        fromAccountId: transaction.fromAccountId || undefined,
+        toAccountId: transaction.toAccountId || undefined
+      };
     } catch (err) {
       throw new DatabaseError(`Failed to process transaction, ${err}`);
     }
   }
   async getTransactionById(id: string): Promise<Transaction | null> {
     try {
-      return await this.app.db.transaction.findUnique({
+      const transaction = await this.app.db.transaction.findUnique({
         where: {
           id,
         },
       });
+
+      if (!transaction) return null;
+
+      return {
+        ...transaction,
+        fromAccountId: transaction.fromAccountId || undefined,
+        toAccountId: transaction.toAccountId || undefined
+      };
     } catch (err) {
       throw new DatabaseError(`Failed to get transaction, ${err}`);
     }
   }
 
-  async updateTransaction(
-    id: string,
-    data: Partial<Transaction>,
-  ): Promise<Transaction> {
+  async updateTransaction(id: string, data: TransactionUpdate): Promise<Transaction> {
     try {
-      return await this.app.db.transaction.update({
-        where: {
-          id,
-        },
-        data,
+      const transaction = await this.app.db.transaction.update({
+        where: { id },
+        data: {
+          amount: data.amount,
+          type: data.type,
+          status: data.status,
+          fromAccountId: data.fromAccountId,
+          toAccountId: data.toAccountId,
+          updatedAt: new Date()
+        }
       });
+
+      return {
+        ...transaction,
+        fromAccountId: transaction.fromAccountId || undefined,
+        toAccountId: transaction.toAccountId || undefined
+      };
     } catch (err) {
       throw new DatabaseError(`Failed to update transaction, ${err}`);
     }
@@ -61,11 +98,17 @@ export class TransactionService {
 
   async deleteTransaction(id: string): Promise<Transaction> {
     try {
-      return await this.app.db.transaction.delete({
+      const transaction = await this.app.db.transaction.delete({
         where: {
           id,
         },
       });
+
+      return {
+        ...transaction,
+        fromAccountId: transaction.fromAccountId || undefined,
+        toAccountId: transaction.toAccountId || undefined
+      };
     } catch (err) {
       throw new DatabaseError(`Failed to delete transaction, ${err}`);
     }

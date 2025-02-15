@@ -11,26 +11,34 @@ datasource db {
 }
 
 model Account {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  password     String
-  balance      Decimal       @default(0)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  status       String
-  transactions Transaction[]
-  user         User          @relation(fields: [userId], references: [id])
-  userId       String
+  id               String        @id @default(uuid())
+  name             String
+  email            String        @unique
+  password         String
+  balance          Decimal       @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  status           String
+  transactions     Transaction[] @relation("AccountTransactions")
+  fromTransactions Transaction[] @relation("FromTransactions")
+  toTransactions   Transaction[] @relation("ToTransactions")
+  user             User          @relation(fields: [userId], references: [id])
+  userId           String
 }
 
 model Transaction {
-  id        String   @id @default(uuid())
-  amount    Float
-  type      String
-  account   Account  @relation(fields: [accountId], references: [id])
-  accountId String
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  amount        Float
+  type          String
+  status        String   @default("pending")
+  fromAccount   Account? @relation("FromTransactions", fields: [fromAccountId], references: [id])
+  fromAccountId String?
+  toAccount     Account? @relation("ToTransactions", fields: [toAccountId], references: [id])
+  toAccountId   String?
+  account       Account  @relation("AccountTransactions", fields: [accountId], references: [id])
+  accountId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model User {

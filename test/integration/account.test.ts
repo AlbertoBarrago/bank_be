@@ -7,7 +7,7 @@ test('account routes', async (t) => {
 
   t.teardown(() => app.close());
 
-  t.test('POST /api/v1/accounts - create account', async (t) => {
+  await t.test('POST /api/v1/accounts - create account', async (t) => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/accounts',

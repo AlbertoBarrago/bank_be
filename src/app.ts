@@ -1,28 +1,28 @@
-import fastify, { FastifyInstance } from 'fastify';
-import fastifyCors from '@fastify/cors';
-import fastifyJwt from '@fastify/jwt';
-import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import fastify, { FastifyInstance } from "fastify";
+import fastifyCors from "@fastify/cors";
+import fastifyJwt from "@fastify/jwt";
+import helmet from "@fastify/helmet";
+import rateLimit from "@fastify/rate-limit";
+import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
-import { configureAuth } from './plugins/auth';
-import { configureDb } from './plugins/db';
-import { configureSwagger } from './plugins/swagger';
+import { configureAuth } from "./plugins/auth";
+import { configureDb } from "./plugins/db";
+import { configureSwagger } from "./plugins/swagger";
 
-import authRoutes from './routes/account';
-import transactionRoutes from './routes/transaction';
+import authRoutes from "./routes/account";
+import transactionRoutes from "./routes/transaction";
 
-import { config } from './config/config';
+import { config } from "./config/config";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
     logger: {
       level: config.logLevel,
       transport: {
-        target: 'pino-pretty',
+        target: "pino-pretty",
         options: {
-          translateTime: 'HH:MM:ss Z',
-          ignore: 'pid,hostname',
+          translateTime: "HH:MM:ss Z",
+          ignore: "pid,hostname",
         },
       },
     },
@@ -39,7 +39,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(helmet);
   await app.register(rateLimit, {
     max: 100,
-    timeWindow: '1 minute',
+    timeWindow: "1 minute",
   });
 
   // Configure custom plugins
@@ -48,9 +48,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   await configureDb(app);
 
   // Register routes
-  await app.register(transactionRoutes, { prefix: '/api/v1/transactions' });
-  await app.register(authRoutes, { prefix: '/api/v1/account' });
-
+  await app.register(transactionRoutes, { prefix: "/api/v1/transactions" });
+  await app.register(authRoutes, { prefix: "/api/v1/account" });
 
   // Global error handler
   app.setErrorHandler((error, request, reply) => {
@@ -77,5 +76,5 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  start()
+  start();
 }

@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { TransactionService } from "../../services/transaction.service";
+import { TransactionService } from "../../services/transaction-service";
 import { Transaction } from "../../types";
 
 type CreateTransactionBody = Pick<

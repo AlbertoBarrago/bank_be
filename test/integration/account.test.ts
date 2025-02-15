@@ -6,7 +6,7 @@ import { FastifyInstance } from 'fastify'
 test('account endpoints', async (t) => {
   const app: FastifyInstance = await build(t)
 
-  t.test('POST /api/v1/account - create account', async (t) => {
+  await t.test('POST /api/v1/account - create account', async (t) => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/account',
@@ -24,7 +24,7 @@ test('account endpoints', async (t) => {
     t.equal(payload.email, 'test@example.com')
   })
 
-  t.test('GET /api/v1/account/:id - get account by id', async (t) => {
+  await t.test('GET /api/v1/account/:id - get account by id', async (t) => {
     const createResponse = await app.inject({
       method: 'POST',
       url: '/api/v1/account',
@@ -34,7 +34,7 @@ test('account endpoints', async (t) => {
         password: 'password123'
       }
     })
-    const { id } = JSON.parse(createResponse.payload)
+    const {id} = JSON.parse(createResponse.payload)
 
     const response = await app.inject({
       method: 'GET',
@@ -46,7 +46,7 @@ test('account endpoints', async (t) => {
     t.equal(payload.id, id)
   })
 
-  t.test('PUT /api/v1/account/:id - update account', async (t) => {
+  await t.test('PUT /api/v1/account/:id - update account', async (t) => {
     const createResponse = await app.inject({
       method: 'POST',
       url: '/api/v1/account',

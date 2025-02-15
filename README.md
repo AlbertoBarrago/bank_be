@@ -54,8 +54,8 @@ fastify-bank-service/
 │   │       ├── schemas.ts
 │   │       └── index.ts
 │   ├── services/
-│   │   ├── account.service.ts
-│   │   └── transaction.service.ts
+│   │   ├── account-service.ts
+│   │   └── transaction-service.ts
 │   ├── models/
 │   │   ├── account.model.ts
 │   │   └── transaction.model.ts

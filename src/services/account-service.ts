@@ -4,7 +4,7 @@ import {
   DatabaseError,
   NotFoundError,
 } from "../utils/errors";
-import { AuthorizationService } from "./authorization.service";
+import { AuthorizationService } from "./authorization-service";
 import { Account as PrismaAccount, Prisma } from "@prisma/client";
 
 interface Account {

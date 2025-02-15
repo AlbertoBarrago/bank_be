@@ -11,6 +11,8 @@ import { configureSwagger } from "./plugins/swagger";
 
 import authRoutes from "./routes/account";
 import transactionRoutes from "./routes/transaction";
+import indexRoutes from './routes/index'
+
 
 import { config } from "./config/config";
 
@@ -50,7 +52,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Register routes
   await app.register(transactionRoutes, { prefix: "/api/v1/transactions" });
   await app.register(authRoutes, { prefix: "/api/v1/account" });
-
+  await app.register(indexRoutes, { prefix: "/" });
   // Global error handler
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);

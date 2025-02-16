@@ -15,7 +15,7 @@ export default async function transactionRoutes(app: FastifyInstance) {
     { schema: createTransactionSchema },
     handlers.createTransaction.bind(handlers),
   );
-  app.post(
+  app.get(
     "/:id",
     { schema: getTransactionSchema },
     handlers.getTransactionById.bind(handlers),

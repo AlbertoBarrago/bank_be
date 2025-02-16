@@ -3,12 +3,21 @@ import { AccountSchema } from "../../types";
 
 export const registerSchema = {
   tags: ["authorization"],
-  body: Type.Pick(AccountSchema, ["name", "email", "password"]),
+  body: Type.Object({
+    name: Type.String(),
+    email: Type.String({ format: "email" }),
+    password: Type.String({
+      minLength: 6,
+      description: "Account password",
+      examples: ["******"]
+    }),
+    balance: Type.Optional(Type.Number({ default: 0 })),
+    status: Type.String()
+  }),
   response: {
     201: Type.Omit(AccountSchema, ["password"]),
   },
 };
-
 export const loginSchema = {
   tags: ["authorization"],
   description: "Authenticate user and receive access token",
@@ -21,8 +30,8 @@ export const loginSchema = {
       }),
       password: Type.String({
         description: "User password",
-        minLength: 4,
-        examples: ["****"],
+        minLength: 6,
+        examples: ["******"],
       }),
     },
     {
@@ -37,7 +46,16 @@ export const loginSchema = {
           description: "JWT access token",
           examples: ["eyJhbGciOiJIUzI1NiIs..."],
         }),
-        account: Type.Omit(AccountSchema, ["password"], {
+        account: Type.Object({
+          id: Type.String(),
+          name: Type.String(),
+          email: Type.String(),
+          balance: Type.Number(),
+          status: Type.String(),
+          createdAt: Type.String(),
+          updatedAt: Type.String(),
+          userId: Type.String()
+        }, {
           description: "User account information",
         }),
       },
@@ -56,9 +74,18 @@ export const loginSchema = {
 export const getAccountSchema = {
   tags: ["authorization"],
   params: Type.Object({
-    id: Type.String(),
+    id: Type.String({ format: "uuid" }),
   }),
   response: {
-    200: Type.Omit(AccountSchema, ["password"]),
+    200: Type.Object({
+      id: Type.String(),
+      name: Type.String(),
+      email: Type.String(),
+      balance: Type.Number(),
+      status: Type.String(),
+      createdAt: Type.String(),
+      updatedAt: Type.String(),
+      userId: Type.String()
+    }),
   },
 };

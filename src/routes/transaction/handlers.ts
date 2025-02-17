@@ -20,19 +20,23 @@ export class TransactionHandlers {
   ) {
     const { type, amount, fromAccountId, toAccountId, status } = request.body;
 
-    if (!fromAccountId || !toAccountId || fromAccountId === toAccountId) {
-      return reply.status(400).send({ error: "Invalid account IDs" });
-    }
-
     const transaction = await this.transactionsService.createTransaction({
       type,
       amount: new Prisma.Decimal(amount).toString(),
       fromAccountId,
       toAccountId,
-      status: status ?? "pending",
     });
 
-    return reply.send(transaction);
+    const response = {
+      type: transaction.type,
+      amount: transaction.amount,
+      fromAccountId: transaction.fromAccountId,
+      toAccountId: transaction.toAccountId,
+      createdAt: transaction.createdAt,
+      updatedAt: transaction.updatedAt,
+    };
+
+    return reply.send(response);
   }
 
   async getTransactionById(

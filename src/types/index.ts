@@ -5,7 +5,6 @@ export type CreateTransactionBody = {
   amount: string;
   fromAccountId: string;
   toAccountId: string;
-  status?: Transaction["status"];
 };
 
 export type RegisterBody = {
@@ -22,6 +21,15 @@ export type LoginBody = {
 
 export type GetAccountBody = {
   id: string;
+};
+
+export type Account = {
+  id: string;
+  name: string;
+  email: string;
+  balance: number;
+  password: string;
+  status: string;
 };
 
 export enum StatusEnum {

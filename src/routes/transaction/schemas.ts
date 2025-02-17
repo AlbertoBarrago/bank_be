@@ -18,7 +18,6 @@ const TransactionSchema = Type.Object({
   amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.Optional(Type.String({ format: "uuid" })),
-  status: Type.Optional(TransactionStatus),
 });
 /**
  * Create Transaction Schema

@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { AccountSchema } from "../../types";
 
 export const registerSchema = {
-  tags: ["authorization"],
+  tags: ["Authorization"],
   body: Type.Object({
     name: Type.String(),
     email: Type.String({ format: "email" }),
@@ -18,7 +18,7 @@ export const registerSchema = {
   },
 };
 export const loginSchema = {
-  tags: ["authorization"],
+  tags: ["Authorization"],
   description: "Authenticate user and receive access token",
   body: Type.Object(
     {
@@ -71,7 +71,7 @@ export const loginSchema = {
 };
 
 export const getAccountSchema = {
-  tags: ["authorization"],
+  tags: ["Authorization"],
   params: Type.Object({
     id: Type.String({ format: "uuid" }),
   }),

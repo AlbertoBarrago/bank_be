@@ -25,6 +25,7 @@ fastify-bank-service/
 │   │   ├── errors.ts
 │   │   └── logger.ts
 │   ├── types/
+│   │   ├── fastify.d.ts
 │   │   └── index.ts
 │   └── app.ts
 ├── test/

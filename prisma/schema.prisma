@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,25 +8,37 @@ datasource db {
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  balance   Decimal  @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    String
+  id               String        @id @default(uuid())
+  name             String
+  email            String        @unique
+  password         String
+  balance          Decimal       @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  status           String
+  transactionsFrom Transaction[] @relation("TransactionFromAccount")
+  transactionsTo   Transaction[] @relation("TransactionToAccount")
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
 }
 
 model Transaction {
-  id     String @id @default(uuid())
-  amount Float
-  type   String
+  id            String   @id @default(uuid())
+  amount        Decimal
+  type          String
+  status        String   @default("pending")
+  fromAccount   Account? @relation("TransactionFromAccount", fields: [fromAccountId], references: [id])
+  fromAccountId String?
+  toAccount     Account? @relation("TransactionToAccount", fields: [toAccountId], references: [id])
+  toAccountId   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model User {
-  id       String @id @default(uuid())
+  id       String    @id @default(uuid())
   name     String
-  email    String @unique
+  email    String    @unique
   password String
+  accounts Account[]
 }

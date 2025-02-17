@@ -16,8 +16,8 @@ fastify-bank-service/
 │   │       ├── schemas.ts
 │   │       └── index.ts
 │   ├── services/
-│   │   ├── account.service.ts
-│   │   └── transaction.service.ts
+│   │   ├── account-service.ts
+│   │   └── transaction-service.ts
 │   ├── models/
 │   │   ├── account.model.ts
 │   │   └── transaction.model.ts
@@ -25,11 +25,12 @@ fastify-bank-service/
 │   │   ├── errors.ts
 │   │   └── logger.ts
 │   ├── types/
+│   │   ├── fastify.d.ts
 │   │   └── index.ts
 │   └── app.ts
 ├── test/
 │   ├── integration/
-│   │   ├── account.test.ts
+│   │   ├── account-test.ts
 │   │   └── transaction.test.ts
 │   └── unit/
 │       ├── services/

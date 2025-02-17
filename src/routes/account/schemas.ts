@@ -1,63 +1,105 @@
-import { Type } from '@sinclair/typebox'
-import { AccountSchema } from '../../types'
+import { Type } from "@sinclair/typebox";
 
+/**
+ * Register Schema
+ */
 export const registerSchema = {
-  tags: ['authorization'],
-  body: Type.Pick(AccountSchema, ['name', 'email', 'password']),
-  response: {
-    201: Type.Omit(AccountSchema, ['password'])
-  }
-}
-
-export const loginSchema = {
-  tags: ['authorization'],
-  description: 'Authenticate user and receive access token',
+  tags: ["Authorization"],
   body: Type.Object({
-    email: Type.String({
-      format: 'email',
-      description: 'User email address',
-      examples: ['user@example.com']
-    }),
+    name: Type.String(),
+    email: Type.String({ format: "email" }),
     password: Type.String({
-      description: 'User password',
-      minLength: 4,
-      examples: ['****']
-    })
-  }, {
-    additionalProperties: false,
-    description: 'Login credentials'
+      minLength: 6,
+      description: "Account password",
+      examples: ["******"],
+    }),
+    balance: Type.Optional(Type.Number({ default: 0 })),
   }),
   response: {
-    200: Type.Object({
-      token: Type.String({
-        description: 'JWT access token',
-        examples: ['eyJhbGciOiJIUzI1NiIs...']
+    201: Type.Omit(
+      Type.Object({
+        id: Type.String(),
+        name: Type.String(),
+        email: Type.String(),
+        balance: Type.Number(),
+        status: Type.String(),
+        createdAt: Type.String(),
+        updatedAt: Type.String(),
+        password: Type.String(),
       }),
-      account: Type.Omit(
-          AccountSchema,
-          ['password'],
+      ["password"],
+    ),
+  },
+};
+export const loginSchema = {
+  tags: ["Authorization"],
+  description: "Authenticate user and receive access token",
+  body: Type.Object(
+    {
+      email: Type.String({
+        format: "email",
+        description: "User email address",
+        examples: ["user@example.com"],
+      }),
+      password: Type.String({
+        description: "User password",
+        minLength: 6,
+        examples: ["******"],
+      }),
+    },
+    {
+      additionalProperties: false,
+      description: "Login credentials",
+    },
+  ),
+  response: {
+    200: Type.Object(
+      {
+        token: Type.String({
+          description: "JWT access token",
+          examples: ["eyJhbGciOiJIUzI1NiIs..."],
+        }),
+        account: Type.Object(
           {
-            description: 'User account information'
-          }
-      )
-    }, {
-      description: 'Successful login response'
-    }),
+            id: Type.String(),
+            name: Type.String(),
+            email: Type.String(),
+            balance: Type.Number(),
+            status: Type.String(),
+            createdAt: Type.String(),
+            updatedAt: Type.String(),
+          },
+          {
+            description: "User account information",
+          },
+        ),
+      },
+      {
+        description: "Successful login response",
+      },
+    ),
     400: Type.Object({
       statusCode: Type.Number(),
       error: Type.String(),
-      message: Type.String()
-    })
-  }
-}
-
-
+      message: Type.String(),
+    }),
+  },
+};
 export const getAccountSchema = {
-  tags: ['authorization'],
+  tags: ["Authorization"],
   params: Type.Object({
-    id: Type.String()
+    id: Type.String({ format: "uuid" }),
   }),
   response: {
-    200: Type.Omit(AccountSchema, ['password'])
-  }
-}
+    200: Type.Object({
+      id: Type.String(),
+      name: Type.String(),
+      email: Type.String(),
+      balance: Type.Number(),
+      status: Type.String(),
+      createdAt: Type.String(),
+      updatedAt: Type.String(),
+      userId: Type.String(),
+    }),
+  },
+};

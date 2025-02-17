@@ -1,14 +1,25 @@
 import { Type } from "@sinclair/typebox";
 import { TransactionSchema } from "../../types";
 
+const TransactionType = Type.Union([
+  Type.Literal("deposit"),
+  Type.Literal("withdrawal"),
+  Type.Literal("transfer"),
+]);
+
+const TransactionStatus = Type.Union([
+  Type.Literal("pending"),
+  Type.Literal("completed"),
+  Type.Literal("failed"),
+]);
+
 export const createTransactionSchema = {
   tags: ["transactions"],
   body: Type.Object({
-    type: Type.String(),
-    amount: Type.Number(),
+    type: TransactionType,
+    amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$", examples: ["100.00"] }),
     fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
     toAccountId: Type.Optional(Type.String({ format: "uuid" })),
-    accountId: Type.String({ format: "uuid" }),
   }),
   response: {
     201: TransactionSchema,
@@ -33,9 +44,9 @@ export const updateTransactionSchema = {
     id: Type.String({ format: "uuid" }),
   }),
   body: Type.Object({
-    status: Type.Optional(Type.String()),
-    amount: Type.Optional(Type.Number()),
-    type: Type.Optional(Type.String())
+    status: Type.Optional(TransactionStatus),
+    amount: Type.Optional(Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" })),
+    type: Type.Optional(TransactionType),
   }),
   response: {
     200: TransactionSchema,

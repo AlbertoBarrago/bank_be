@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,24 +16,21 @@ model Account {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   status           String
-  transactions     Transaction[] @relation("AccountTransactions")
-  fromTransactions Transaction[] @relation("FromTransactions")
-  toTransactions   Transaction[] @relation("ToTransactions")
-  user             User          @relation(fields: [userId], references: [id])
+  transactionsFrom Transaction[] @relation("TransactionFromAccount")
+  transactionsTo   Transaction[] @relation("TransactionToAccount")
   userId           String
+  user             User          @relation(fields: [userId], references: [id])
 }
 
 model Transaction {
   id            String   @id @default(uuid())
-  amount        Float
+  amount        Decimal
   type          String
   status        String   @default("pending")
-  fromAccount   Account? @relation("FromTransactions", fields: [fromAccountId], references: [id])
+  fromAccount   Account? @relation("TransactionFromAccount", fields: [fromAccountId], references: [id])
   fromAccountId String?
-  toAccount     Account? @relation("ToTransactions", fields: [toAccountId], references: [id])
+  toAccount     Account? @relation("TransactionToAccount", fields: [toAccountId], references: [id])
   toAccountId   String?
-  account       Account  @relation("AccountTransactions", fields: [accountId], references: [id])
-  accountId     String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

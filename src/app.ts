@@ -11,8 +11,7 @@ import { configureSwagger } from "./plugins/swagger";
 
 import authRoutes from "./routes/account";
 import transactionRoutes from "./routes/transaction";
-import indexRoutes from './routes/index'
-
+import indexRoutes from "./routes/index";
 
 import { config } from "./config/config";
 

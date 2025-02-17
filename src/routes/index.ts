@@ -1,10 +1,8 @@
-import {FastifyInstance} from 'fastify'
+import { FastifyInstance } from "fastify";
 
 export default async function indexRoutes(fastify: FastifyInstance) {
-    fastify.get('/', async (request, reply) => {
-        reply
-            .type('text/html')
-            .send(`
+  fastify.get("/", async (request, reply) => {
+    reply.type("text/html").send(`
         <!DOCTYPE html>
         <html lang="en">
           <head>
@@ -41,6 +39,6 @@ export default async function indexRoutes(fastify: FastifyInstance) {
             </div>
           </body>
         </html>
-      `)
-    })
+      `);
+  });
 }

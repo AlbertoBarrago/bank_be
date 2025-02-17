@@ -1,6 +1,8 @@
 import { Type } from "@sinclair/typebox";
-import { AccountSchema } from "../../types";
 
+/**
+ * Register Schema
+ */
 export const registerSchema = {
   tags: ["Authorization"],
   body: Type.Object({
@@ -9,15 +11,26 @@ export const registerSchema = {
     password: Type.String({
       minLength: 6,
       description: "Account password",
-      examples: ["******"]
+      examples: ["******"],
     }),
     balance: Type.Optional(Type.Number({ default: 0 })),
   }),
   response: {
-    201: Type.Omit(AccountSchema, ["password"]),
+    201: Type.Omit(
+      Type.Object({
+        id: Type.String(),
+        name: Type.String(),
+        email: Type.String(),
+        balance: Type.Number(),
+        status: Type.String(),
+        createdAt: Type.String(),
+        updatedAt: Type.String(),
+        password: Type.String(),
+      }),
+      ["password"],
+    ),
   },
 };
-
 export const loginSchema = {
   tags: ["Authorization"],
   description: "Authenticate user and receive access token",
@@ -46,17 +59,20 @@ export const loginSchema = {
           description: "JWT access token",
           examples: ["eyJhbGciOiJIUzI1NiIs..."],
         }),
-        account: Type.Object({
-          id: Type.String(),
-          name: Type.String(),
-          email: Type.String(),
-          balance: Type.Number(),
-          status: Type.String(),
-          createdAt: Type.String(),
-          updatedAt: Type.String(),
-        }, {
-          description: "User account information",
-        }),
+        account: Type.Object(
+          {
+            id: Type.String(),
+            name: Type.String(),
+            email: Type.String(),
+            balance: Type.Number(),
+            status: Type.String(),
+            createdAt: Type.String(),
+            updatedAt: Type.String(),
+          },
+          {
+            description: "User account information",
+          },
+        ),
       },
       {
         description: "Successful login response",
@@ -69,7 +85,6 @@ export const loginSchema = {
     }),
   },
 };
-
 export const getAccountSchema = {
   tags: ["Authorization"],
   params: Type.Object({
@@ -84,7 +99,7 @@ export const getAccountSchema = {
       status: Type.String(),
       createdAt: Type.String(),
       updatedAt: Type.String(),
-      userId: Type.String()
+      userId: Type.String(),
     }),
   },
 };

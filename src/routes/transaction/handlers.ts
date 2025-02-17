@@ -1,14 +1,14 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { TransactionService } from "../../services/transaction-service";
 import { Transaction } from "../../types";
-import {Prisma} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 type CreateTransactionBody = {
-  type: Transaction['type'];
+  type: Transaction["type"];
   amount: string;
   fromAccountId: string;
   toAccountId: string;
-  status?: Transaction['status'];
+  status?: Transaction["status"];
 };
 
 export class TransactionHandlers {
@@ -19,8 +19,8 @@ export class TransactionHandlers {
   }
 
   async createTransaction(
-      request: FastifyRequest<{ Body: CreateTransactionBody }>,
-      reply: FastifyReply,
+    request: FastifyRequest<{ Body: CreateTransactionBody }>,
+    reply: FastifyReply,
   ) {
     try {
       const { type, amount, fromAccountId, toAccountId, status } = request.body;
@@ -36,7 +36,7 @@ export class TransactionHandlers {
         amount: amountDecimal.toString(),
         fromAccountId,
         toAccountId,
-        status: status ?? "pending"
+        status: status ?? "pending",
       });
 
       return reply.status(201).send(transaction);
@@ -47,12 +47,12 @@ export class TransactionHandlers {
   }
 
   async getTransactionById(
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply,
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
   ) {
     try {
       const transaction = await this.transactionsService.getTransactionById(
-          request.params.id,
+        request.params.id,
       );
 
       if (!transaction) {
@@ -67,16 +67,16 @@ export class TransactionHandlers {
   }
 
   async updateTransaction(
-      request: FastifyRequest<{
-        Params: { id: string };
-        Body: Partial<Transaction>;
-      }>,
-      reply: FastifyReply,
+    request: FastifyRequest<{
+      Params: { id: string };
+      Body: Partial<Transaction>;
+    }>,
+    reply: FastifyReply,
   ) {
     try {
       const transaction = await this.transactionsService.updateTransaction(
-          request.params.id,
-          request.body,
+        request.params.id,
+        request.body,
       );
 
       if (!transaction) {
@@ -91,12 +91,12 @@ export class TransactionHandlers {
   }
 
   async deleteTransaction(
-      request: FastifyRequest<{ Params: { id: string } }>,
-      reply: FastifyReply,
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
   ) {
     try {
       const transaction = await this.transactionsService.deleteTransaction(
-          request.params.id,
+        request.params.id,
       );
 
       if (!transaction) {

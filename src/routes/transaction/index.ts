@@ -7,6 +7,10 @@ import {
 } from "./schemas";
 import { TransactionHandlers } from "./handlers";
 
+/**
+ * Register routes for the transaction module
+ * @param app
+ */
 export default async function transactionRoutes(app: FastifyInstance) {
   const handlers = new TransactionHandlers(app);
 

@@ -4,6 +4,9 @@ import { Prisma } from "@prisma/client";
 import { Transaction } from "./schemas";
 import { CreateTransactionBody } from "../../types";
 
+/**
+ * Handles requests to the transaction routes
+ */
 export class TransactionHandlers {
   private transactionsService: TransactionService;
 
@@ -15,48 +18,36 @@ export class TransactionHandlers {
     request: FastifyRequest<{ Body: CreateTransactionBody }>,
     reply: FastifyReply,
   ) {
-    try {
-      const { type, amount, fromAccountId, toAccountId, status } = request.body;
+    const { type, amount, fromAccountId, toAccountId, status } = request.body;
 
-      if (!fromAccountId || !toAccountId || fromAccountId === toAccountId) {
-        return reply.status(400).send({ error: "Invalid account IDs" });
-      }
-
-      const amountDecimal = new Prisma.Decimal(amount);
-
-      const transaction = await this.transactionsService.createTransaction({
-        type,
-        amount: amountDecimal.toString(),
-        fromAccountId,
-        toAccountId,
-        status: status ?? "pending",
-      });
-
-      return reply.status(201).send(transaction);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({ error: "Transaction creation failed" });
+    if (!fromAccountId || !toAccountId || fromAccountId === toAccountId) {
+      return reply.status(400).send({ error: "Invalid account IDs" });
     }
+
+    const transaction = await this.transactionsService.createTransaction({
+      type,
+      amount: new Prisma.Decimal(amount).toString(),
+      fromAccountId,
+      toAccountId,
+      status: status ?? "pending",
+    });
+
+    return reply.send(transaction);
   }
 
   async getTransactionById(
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply,
   ) {
-    try {
-      const transaction = await this.transactionsService.getTransactionById(
-        request.params.id,
-      );
+    const transaction = await this.transactionsService.getTransactionById(
+      request.params.id,
+    );
 
-      if (!transaction) {
-        return reply.status(404).send({ error: "Transaction not found" });
-      }
-
-      return reply.send(transaction);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({ error: "Failed to fetch transaction" });
+    if (!transaction) {
+      return reply.status(404).send({ error: "Transaction not found" });
     }
+
+    return reply.send(transaction);
   }
 
   async updateTransaction(
@@ -66,40 +57,30 @@ export class TransactionHandlers {
     }>,
     reply: FastifyReply,
   ) {
-    try {
-      const transaction = await this.transactionsService.updateTransaction(
-        request.params.id,
-        request.body,
-      );
+    const transaction = await this.transactionsService.updateTransaction(
+      request.params.id,
+      request.body,
+    );
 
-      if (!transaction) {
-        return reply.status(404).send({ error: "Transaction not found" });
-      }
-
-      return reply.send(transaction);
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({ error: "Failed to update transaction" });
+    if (!transaction) {
+      return reply.status(404).send({ error: "Transaction not found" });
     }
+
+    return reply.send(transaction);
   }
 
   async deleteTransaction(
     request: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply,
   ) {
-    try {
-      const transaction = await this.transactionsService.deleteTransaction(
-        request.params.id,
-      );
+    const transaction = await this.transactionsService.deleteTransaction(
+      request.params.id,
+    );
 
-      if (!transaction) {
-        return reply.status(404).send({ error: "Transaction not found" });
-      }
-
-      return reply.send({ message: "Transaction deleted successfully" });
-    } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({ error: "Failed to delete transaction" });
+    if (!transaction) {
+      return reply.status(404).send({ error: "Transaction not found" });
     }
+
+    return reply.send(transaction);
   }
 }

@@ -7,3 +7,26 @@ export type CreateTransactionBody = {
   toAccountId: string;
   status?: Transaction["status"];
 };
+
+export type RegisterBody = {
+  name: string;
+  email: string;
+  password: string;
+  balance: number;
+};
+
+export type LoginBody = {
+  email: string;
+  password: string;
+};
+
+export type GetAccountBody = {
+  id: string;
+};
+
+export enum StatusEnum {
+  ACTIVE = "active",
+  PENDING = "pending",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}

@@ -30,7 +30,6 @@ export class AccountService {
     password: string;
     balance: number;
     status: string;
-    userId: string;
   }): Promise<Omit<Account, "password">> {
     try {
       const hashedPassword = await this.authService.hashPassword(data.password);
@@ -41,8 +40,6 @@ export class AccountService {
           password: hashedPassword,
           balance: data.balance,
           status: data.status,
-          createdAt: new Date(),
-          updatedAt: new Date(),
           user: {
             create: {
               name: data.name,

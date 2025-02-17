@@ -14,14 +14,11 @@ const TransactionStatus = Type.Union([
   Type.Literal("failed"),
 ]);
 const TransactionSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
   type: TransactionType,
   amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.Optional(Type.String({ format: "uuid" })),
   status: Type.Optional(TransactionStatus),
-  createdAt: Type.String({ format: "date-time" }),
-  updatedAt: Type.String({ format: "date-time" }),
 });
 /**
  * Create Transaction Schema

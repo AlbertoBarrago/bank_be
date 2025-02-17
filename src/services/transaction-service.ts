@@ -5,8 +5,8 @@ import {
 } from "fastify";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DatabaseError } from "../utils/errors";
-import { Transaction } from "../types";
 import { ResolveRequestBody } from "fastify/types/type-provider";
+import { Transaction } from "../routes/transaction/schemas";
 
 /**
  * Service for managing transactions

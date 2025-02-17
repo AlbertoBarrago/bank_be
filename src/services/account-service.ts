@@ -5,7 +5,6 @@ import {
   NotFoundError,
 } from "../utils/errors";
 import { AuthorizationService } from "./authorization-service";
-import { Account as PrismaAccount, Prisma } from "@prisma/client";
 import { Account } from "../types";
 
 export class AccountService {
@@ -54,7 +53,7 @@ export class AccountService {
     }
   }
 
-  async getAccount(id: string): Promise<Account> {
+  async getAccount(id: string): Promise<Omit<Account, "userId">> {
     const account = await this.app.db.account.findUnique({ where: { id } });
     if (!account) {
       throw new NotFoundError("Account not found");
@@ -70,7 +69,7 @@ export class AccountService {
     password: string,
   ): Promise<{
     token: string;
-    account: Omit<PrismaAccount, "password">;
+    account: Omit<Account, "password">;
   }> {
     const account = await this.app.db.account.findUnique({
       where: { email },
@@ -105,8 +104,7 @@ export class AccountService {
       token,
       account: {
         ...accountWithoutPassword,
-        balance: new Prisma.Decimal(accountWithoutPassword.balance),
-        userId: "",
+        balance: Number(account.balance),
       },
     };
   }

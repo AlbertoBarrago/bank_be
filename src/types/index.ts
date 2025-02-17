@@ -1,7 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
 
 export const AccountSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
   name: Type.String(),
   email: Type.String({ format: "email" }),
   balance: Type.Number(),
@@ -10,18 +9,10 @@ export const AccountSchema = Type.Object({
     Type.Literal("suspended"),
     Type.Literal("closed"),
   ]),
-  createdAt: Type.String({ format: "date-time" }),
-  updatedAt: Type.String({ format: "date-time" }),
 });
 
 export const TransactionSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  type: Type.Union([
-    Type.Literal("deposit"),
-    Type.Literal("withdrawal"),
-    Type.Literal("transfer"),
-  ]),
-  amount: Type.Number(),
+  amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$", examples: ["100.00"] }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.String({ format: "uuid" }),
   status: Type.Union([
@@ -29,8 +20,11 @@ export const TransactionSchema = Type.Object({
     Type.Literal("completed"),
     Type.Literal("failed"),
   ]),
-  createdAt: Type.String({ format: "date-time" }),
-  updatedAt: Type.String({ format: "date-time" }),
+  type: Type.Union([
+    Type.Literal("deposit"),
+    Type.Literal("withdrawal"),
+    Type.Literal("transfer"),
+  ]),
 });
 
 export type Transaction = Static<typeof TransactionSchema>;

@@ -17,6 +17,7 @@ export const registerSchema = {
     201: Type.Omit(AccountSchema, ["password"]),
   },
 };
+
 export const loginSchema = {
   tags: ["Authorization"],
   description: "Authenticate user and receive access token",
@@ -53,7 +54,6 @@ export const loginSchema = {
           status: Type.String(),
           createdAt: Type.String(),
           updatedAt: Type.String(),
-          userId: Type.String()
         }, {
           description: "User account information",
         }),

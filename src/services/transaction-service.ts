@@ -1,8 +1,19 @@
-import {FastifyInstance} from "fastify";
+import {FastifyInstance, FastifySchema, FastifyTypeProviderDefault} from "fastify";
 import {Prisma, PrismaClient} from "@prisma/client";
 import {DatabaseError} from "../utils/errors";
+import {Transaction} from "../types";
+import {ResolveRequestBody} from "fastify/types/type-provider";
 
-
+/**
+ * Service for managing transactions
+ * @class TransactionService
+ * @param app Fastify instance
+ * @param db Prisma client instance
+ * @constructor Creates a new instance of TransactionService
+ * @throws DatabaseError if there is an error interacting with the database
+ * @throws Error if required account IDs are missing or if there are insufficient funds
+ * @returns Transaction data with associated accounts
+ */
 export class TransactionService {
     private db: PrismaClient;
 
@@ -16,13 +27,7 @@ export class TransactionService {
      * @returns The created transaction with associated accounts
      * @throws Error if required account IDs are missing or if there are insufficient funds
      */
-    async createTransaction(data: {
-        type: "deposit" | "withdrawal" | "transfer";
-        amount: number | string;
-        fromAccountId?: string | null;
-        toAccountId?: string | null;
-        status?: string;
-    }) {
+    async createTransaction(data: Transaction) {
         const amount = new Prisma.Decimal(data.amount);
 
         return this.db.$transaction(async (tx) => {
@@ -130,11 +135,14 @@ export class TransactionService {
     /**
      * Updates an existing transaction
      * @param id The transaction ID to update
-     * @param data The data to update the transaction with
+     * @param data The updated transaction data
      * @returns The updated transaction with associated accounts
      * @throws DatabaseError if the operation fails
      */
-    async updateTransaction(id: string, data: any) {
+    async updateTransaction(id: string, data: ResolveRequestBody<FastifyTypeProviderDefault, FastifySchema, {
+        Params: { id: string };
+        Body: Partial<Transaction>
+    }>) {
         try {
             return await this.db.transaction.update({
                 where: {id},

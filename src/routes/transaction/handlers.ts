@@ -3,10 +3,13 @@ import { TransactionService } from "../../services/transaction-service";
 import { Transaction } from "../../types";
 import {Prisma} from "@prisma/client";
 
-type CreateTransactionBody = Pick<
-    Transaction,
-    "type" | "amount" | "fromAccountId" | "toAccountId" | "status"
->;
+type CreateTransactionBody = {
+  type: Transaction['type'];
+  amount: string;
+  fromAccountId: string;
+  toAccountId: string;
+  status?: Transaction['status'];
+};
 
 export class TransactionHandlers {
   private transactionsService: TransactionService;
@@ -26,9 +29,11 @@ export class TransactionHandlers {
         return reply.status(400).send({ error: "Invalid account IDs" });
       }
 
+      const amountDecimal = new Prisma.Decimal(amount);
+
       const transaction = await this.transactionsService.createTransaction({
         type,
-        amount: new Prisma.Decimal(amount),
+        amount: amountDecimal.toString(),
         fromAccountId,
         toAccountId,
         status: status ?? "pending"

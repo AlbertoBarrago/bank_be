@@ -1,15 +1,8 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { TransactionService } from "../../services/transaction-service";
-import { Transaction } from "../../types";
 import { Prisma } from "@prisma/client";
-
-type CreateTransactionBody = {
-  type: Transaction["type"];
-  amount: string;
-  fromAccountId: string;
-  toAccountId: string;
-  status?: Transaction["status"];
-};
+import { Transaction } from "./schemas";
+import { CreateTransactionBody } from "../../types";
 
 export class TransactionHandlers {
   private transactionsService: TransactionService;

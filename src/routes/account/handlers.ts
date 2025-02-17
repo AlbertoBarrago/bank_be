@@ -1,7 +1,16 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AccountService } from "../../services/account-service";
-import { randomUUID } from "node:crypto";
+import {
+  GetAccountBody,
+  LoginBody,
+  RegisterBody,
+  StatusEnum,
+} from "../../types";
 
+/**
+ * Handles requests to the auth routes
+ * @param app
+ */
 export class AuthHandlers {
   private accountService: AccountService;
 
@@ -11,7 +20,7 @@ export class AuthHandlers {
 
   async register(
     request: FastifyRequest<{
-      Body: { name: string; email: string; password: string; balance: number };
+      Body: RegisterBody;
     }>,
     reply: FastifyReply,
   ) {
@@ -20,14 +29,13 @@ export class AuthHandlers {
       email: request.body.email,
       password: request.body.password,
       balance: request.body.balance,
-      userId: String(randomUUID()),
-      status: "active",
+      status: StatusEnum.PENDING,
     });
     return reply.status(201).send(account);
   }
 
   async login(
-    request: FastifyRequest<{ Body: { email: string; password: string } }>,
+    request: FastifyRequest<{ Body: LoginBody }>,
     reply: FastifyReply,
   ) {
     const { email, password } = request.body;
@@ -36,7 +44,7 @@ export class AuthHandlers {
   }
 
   async getAccount(
-    request: FastifyRequest<{ Params: { id: string } }>,
+    request: FastifyRequest<{ Params: GetAccountBody }>,
     reply: FastifyReply,
   ) {
     const account = await this.accountService.getAccount(request.params.id);

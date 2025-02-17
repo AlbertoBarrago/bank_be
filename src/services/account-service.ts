@@ -6,17 +6,8 @@ import {
 } from "../utils/errors";
 import { AuthorizationService } from "./authorization-service";
 import { Account as PrismaAccount, Prisma } from "@prisma/client";
+import { Account } from "../types";
 
-interface Account {
-  id: string;
-  name: string;
-  email: string;
-  balance: number;
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: string;
-}
 export class AccountService {
   private authService: AuthorizationService;
 
@@ -24,25 +15,18 @@ export class AccountService {
     this.authService = new AuthorizationService(app);
   }
 
-  async createAccount(data: {
-    name: string;
-    email: string;
-    password: string;
-    balance: number;
-    status: string;
-    userId: string;
-  }): Promise<Omit<Account, "password">> {
+  async createAccount(
+    data: Omit<Account, "id">,
+  ): Promise<Omit<Account, "password">> {
     try {
       const hashedPassword = await this.authService.hashPassword(data.password);
       const account = await this.app.db.account.create({
         data: {
           name: data.name,
           email: data.email,
-          password: hashedPassword,
           balance: data.balance,
+          password: hashedPassword,
           status: data.status,
-          createdAt: new Date(),
-          updatedAt: new Date(),
           user: {
             create: {
               name: data.name,

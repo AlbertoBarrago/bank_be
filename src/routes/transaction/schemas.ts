@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 
 /**
  * Transaction Type
@@ -13,15 +13,11 @@ const TransactionStatus = Type.Union([
   Type.Literal("completed"),
   Type.Literal("failed"),
 ]);
-const TransactionResponse = Type.Object({
-  id: Type.String({ format: "uuid" }),
+const TransactionSchema = Type.Object({
   type: TransactionType,
   amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.Optional(Type.String({ format: "uuid" })),
-  status: Type.Optional(TransactionStatus),
-  createdAt: Type.String({ format: "date-time" }),
-  updatedAt: Type.String({ format: "date-time" }),
 });
 /**
  * Create Transaction Schema
@@ -38,7 +34,7 @@ export const createTransactionSchema = {
     toAccountId: Type.Optional(Type.String({ format: "uuid" })),
   }),
   response: {
-    201: TransactionResponse,
+    201: TransactionSchema,
   },
   security: [{ bearerAuth: [] }],
 };
@@ -48,7 +44,7 @@ export const getTransactionSchema = {
     id: Type.String({ format: "uuid" }),
   }),
   response: {
-    200: TransactionResponse,
+    200: TransactionSchema,
   },
   security: [{ bearerAuth: [] }],
 };
@@ -63,7 +59,7 @@ export const updateTransactionSchema = {
     type: Type.Optional(TransactionType),
   }),
   response: {
-    200: TransactionResponse,
+    200: TransactionSchema,
   },
   security: [{ bearerAuth: [] }],
 };
@@ -77,3 +73,5 @@ export const deleteTransactionSchema = {
   },
   security: [{ bearerAuth: [] }],
 };
+
+export type Transaction = Static<typeof TransactionSchema>;

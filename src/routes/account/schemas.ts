@@ -16,19 +16,15 @@ export const registerSchema = {
     balance: Type.Optional(Type.Number({ default: 0 })),
   }),
   response: {
-    201: Type.Omit(
-      Type.Object({
-        id: Type.String(),
-        name: Type.String(),
-        email: Type.String(),
-        balance: Type.Number(),
-        status: Type.String(),
-        createdAt: Type.String(),
-        updatedAt: Type.String(),
-        password: Type.String(),
-      }),
-      ["password"],
-    ),
+    201: Type.Object({
+      id: Type.String(),
+      name: Type.String(),
+      email: Type.String(),
+      balance: Type.Number(),
+      status: Type.String(),
+      createdAt: Type.String(),
+      updatedAt: Type.String(),
+    }),
   },
 };
 export const loginSchema = {

@@ -2,9 +2,10 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { TransactionService } from "../../services/transaction-service";
 import { Transaction } from "../../types";
 
+
 type CreateTransactionBody = Pick<
   Transaction,
-  "id" | "type" | "amount" | "fromAccountId" | "toAccountId"
+  "id" | "type" | "amount" | "fromAccountId" | "toAccountId" | "status" | "accountId"
 >;
 
 export class TransactionHandlers {
@@ -18,10 +19,17 @@ export class TransactionHandlers {
     request: FastifyRequest<{ Body: CreateTransactionBody }>,
     reply: FastifyReply,
   ) {
+    //@ts-ignore
+    const { id } = request.user;
     const transaction = await this.transactionsService.createTransaction({
-      id: request.body.id,
       type: request.body.type,
       amount: request.body.amount,
+      fromAccountId: request.body.fromAccountId,
+      toAccountId: request.body.toAccountId,
+      accountId: id,
+      status: "completed",
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     return reply.status(201).send(transaction);
   }

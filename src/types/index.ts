@@ -24,6 +24,7 @@ export const TransactionSchema = Type.Object({
   amount: Type.Number(),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.String({ format: "uuid" }),
+  accountId: Type.String({ format: "uuid" }),
   status: Type.Union([
     Type.Literal("pending"),
     Type.Literal("completed"),

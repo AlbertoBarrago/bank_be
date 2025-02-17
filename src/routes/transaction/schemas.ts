@@ -9,7 +9,6 @@ export const createTransactionSchema = {
     fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
     toAccountId: Type.Optional(Type.String({ format: "uuid" })),
     accountId: Type.String({ format: "uuid" }),
-    status: Type.Optional(Type.String())
   }),
   response: {
     201: TransactionSchema,

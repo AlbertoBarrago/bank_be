@@ -12,7 +12,6 @@ export const registerSchema = {
       examples: ["******"]
     }),
     balance: Type.Optional(Type.Number({ default: 0 })),
-    status: Type.String()
   }),
   response: {
     201: Type.Omit(AccountSchema, ["password"]),

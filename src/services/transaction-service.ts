@@ -23,24 +23,44 @@ interface TransactionUpdate {
 
 export class TransactionService {
   constructor(private app: FastifyInstance) {}
-
   async createTransaction(data: {
-    id: string;
     type: "deposit" | "withdrawal" | "transfer";
     amount: number;
+    fromAccountId: string | undefined;
+    toAccountId: string;
+    accountId: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date
   }): Promise<Transaction> {
     try {
       const transaction = await this.app.db.transaction.create({
         data: {
           amount: data.amount,
           type: data.type,
-          status: 'completed',
-          accountId: data.id,
-          fromAccountId: data.type === 'transfer' ? data.id : null,
-          toAccountId: data.type === 'transfer' ? data.id : null,
-          createdAt: new Date(),
+          status: data.status,
+          account: {
+            connect: {
+              id: data.accountId
+            }
+          },
+          fromAccount: data.fromAccountId ? {
+            connect: {
+              id: data.fromAccountId
+            }
+          } : undefined,
+          toAccount: data.toAccountId ? {
+            connect: {
+              id: data.toAccountId
+            }
+          } : undefined,
           updatedAt: new Date(),
         },
+        include: {
+          account: true,
+          fromAccount: true,
+          toAccount: true
+        }
       });
 
       return {
@@ -52,8 +72,7 @@ export class TransactionService {
       throw new DatabaseError(`Failed to process transaction, ${err}`);
     }
   }
-  async getTransactionById(id: string): Promise<Transaction | null> {
-    try {
+  async getTransactionById(id: string): Promise<Transaction | null> {    try {
       const transaction = await this.app.db.transaction.findUnique({
         where: {
           id,

@@ -18,7 +18,7 @@ export class TransactionHandlers {
     request: FastifyRequest<{ Body: CreateTransactionBody }>,
     reply: FastifyReply,
   ) {
-    const { type, amount, fromAccountId, toAccountId, status } = request.body;
+    const { type, amount, fromAccountId, toAccountId } = request.body;
 
     const transaction = await this.transactionsService.createTransaction({
       type,

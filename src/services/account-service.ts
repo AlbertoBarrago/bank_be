@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyBaseLogger, FastifyInstance } from "fastify";
 import {
   AuthorizationError,
   DatabaseError,
@@ -9,9 +9,11 @@ import { Account } from "../types";
 
 export class AccountService {
   private authService: AuthorizationService;
+  private logger: FastifyBaseLogger;
 
   constructor(private app: FastifyInstance) {
     this.authService = new AuthorizationService(app);
+    this.logger = this.app.log.child({ service: "AccountService" });
   }
 
   async createAccount(
@@ -44,6 +46,17 @@ export class AccountService {
           updatedAt: true,
         },
       });
+
+      this.logger.info(
+        {
+          action: "create_account",
+          email: data.email,
+          name: data.name,
+          status: data.status,
+        },
+        "New account creation request received",
+      );
+
       return {
         ...account,
         balance: Number(account.balance),
@@ -53,15 +66,12 @@ export class AccountService {
     }
   }
 
-  async getAccount(id: string): Promise<Omit<Account, "userId">> {
+  async getAccount(id: string) {
     const account = await this.app.db.account.findUnique({ where: { id } });
     if (!account) {
       throw new NotFoundError("Account not found");
     }
-    return {
-      ...account,
-      balance: Number(account.balance),
-    };
+    return account;
   }
 
   async login(
@@ -85,8 +95,17 @@ export class AccountService {
       },
     });
 
+    this.logger.info(
+      {
+        action: "login",
+        email,
+        name: account?.name,
+        status: account?.status,
+      },
+      "Login initialized",
+    );
     if (!account) {
-      throw new AuthorizationError("Insufficient funds");
+      throw new AuthorizationError("User Not Found");
     }
 
     const isValid = await this.authService.verifyPassword(

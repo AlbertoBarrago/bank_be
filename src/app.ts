@@ -2,7 +2,6 @@ import fastify, { FastifyInstance } from "fastify";
 import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import helmet from "@fastify/helmet";
-import rateLimit from "@fastify/rate-limit";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
 import { configureAuth } from "./plugins/auth";
@@ -14,6 +13,7 @@ import transactionRoutes from "./routes/transaction";
 import indexRoutes from "./routes/index";
 
 import { config } from "./config/config";
+import rateLimit from "./config/rate-limit";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -38,10 +38,7 @@ export async function buildApp(): Promise<FastifyInstance> {
     credentials: true,
   });
   await app.register(helmet);
-  await app.register(rateLimit, {
-    max: 100,
-    timeWindow: "1 minute",
-  });
+  await app.register(rateLimit);
 
   // Configure custom plugins
   await configureSwagger(app);
@@ -52,6 +49,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(transactionRoutes, { prefix: "/api/v1/transactions" });
   await app.register(authRoutes, { prefix: "/api/v1/account" });
   await app.register(indexRoutes, { prefix: "/" });
+
   // Global error handler
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
@@ -77,5 +75,7 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  start();
+  start().then(() => {
+    console.log("We are on the road 🚀");
+  });
 }

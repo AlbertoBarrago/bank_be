@@ -1,4 +1,5 @@
 import {
+  FastifyBaseLogger,
   FastifyInstance,
   FastifySchema,
   FastifyTypeProviderDefault,
@@ -14,9 +15,11 @@ import { Transaction } from "../routes/transaction/schemas";
  */
 export class TransactionService {
   private db: PrismaClient;
+  private logger: FastifyBaseLogger;
 
   constructor(private app: FastifyInstance) {
     this.db = this.app.db;
+    this.logger = this.app.log.child({ service: "TransactionService" });
   }
 
   async createTransaction(data: Transaction) {
@@ -97,6 +100,17 @@ export class TransactionService {
           break;
       }
 
+      this.logger.info(
+        {
+          action: "create_transaction",
+          type: data.type,
+          fromAccountId: data.fromAccountId,
+          toAccountId: data.toAccountId,
+          amount: data.amount,
+        },
+        "New transaction creation request received",
+      );
+
       return tx.transaction.update({
         where: { id: transaction.id },
         data: { status: "completed" },
@@ -110,6 +124,13 @@ export class TransactionService {
 
   async getTransactionById(id: string) {
     try {
+      this.logger.info(
+        {
+          action: "get_transaction",
+          id,
+        },
+        "Transaction retrieval request received",
+      );
       return await this.db.transaction.findUnique({
         where: { id },
         include: {
@@ -134,6 +155,14 @@ export class TransactionService {
     >,
   ) {
     try {
+      this.logger.info(
+        {
+          action: "update_transaction",
+          id,
+          data,
+        },
+        "Transaction update request received",
+      );
       return await this.db.transaction.update({
         where: { id },
         data: {
@@ -155,6 +184,13 @@ export class TransactionService {
 
   async deleteTransaction(id: string) {
     try {
+      this.logger.info(
+        {
+          action: "delete_transaction",
+          id,
+        },
+        "Transaction deletion request received",
+      );
       return await this.db.transaction.delete({
         where: { id },
         include: {

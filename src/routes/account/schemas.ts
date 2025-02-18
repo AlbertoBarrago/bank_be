@@ -95,7 +95,6 @@ export const getAccountSchema = {
       status: Type.String(),
       createdAt: Type.String(),
       updatedAt: Type.String(),
-      userId: Type.String(),
     }),
   },
 };

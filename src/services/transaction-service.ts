@@ -167,24 +167,46 @@ export class TransactionService {
     });
   }
 
-  async getTransactionById(id: string) {
+  async getUserTransactions(id: string) {
     try {
       this.logger.info(
         {
-          action: "get_transaction",
+          action: "get_user_transaction",
           id,
         },
         "Transaction retrieval request received",
       );
-      return await this.db.transaction.findUnique({
-        where: { id },
+
+      const userAccount = await this.db.account.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      this.logger.info({
+        action: "get_user_transaction",
+        userAccount,
+      });
+
+      return await this.db.transaction.findMany({
+        where: {
+          OR: [
+            { fromAccountId: userAccount?.id },
+            { toAccountId: userAccount?.id },
+          ],
+        },
         include: {
           fromAccount: true,
           toAccount: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
     } catch (err) {
-      throw new TransactionNotFoundError(`Failed to get transaction: ${err}`);
+      throw new TransactionNotFoundError(
+        `Failed to get User transactions: ${err}`,
+      );
     }
   }
 

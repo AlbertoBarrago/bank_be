@@ -18,6 +18,10 @@ export async function configureSwagger(app: FastifyInstance) {
       },
       tags: [
         {
+          name: "Registration",
+          description: "Registration related endpoints",
+        },
+        {
           name: "Authorization",
           description: "Authentication related endpoints",
         },

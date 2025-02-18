@@ -40,11 +40,8 @@ export const createTransactionSchema = {
 };
 export const getTransactionSchema = {
   tags: ["Transactions"],
-  params: Type.Object({
-    id: Type.String({ format: "uuid" }),
-  }),
   response: {
-    200: TransactionSchema,
+    200: Type.Array(TransactionSchema),
   },
   security: [{ bearerAuth: [] }],
 };

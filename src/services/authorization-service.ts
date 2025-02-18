@@ -1,7 +1,8 @@
-import { FastifyBaseLogger, FastifyInstance } from "fastify";
+import { FastifyBaseLogger, FastifyInstance, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config";
+import { User } from "@prisma/client";
 
 export class AuthorizationService {
   private logger: FastifyBaseLogger;

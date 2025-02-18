@@ -8,5 +8,6 @@ declare module "fastify" {
   interface FastifyInstance {
     db: PrismaClient;
     cache: NodeCache;
+    events: EventEmitter;
   }
 }

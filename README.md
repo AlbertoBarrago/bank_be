@@ -1,4 +1,5 @@
 # 🚀 Fastify Bank Service API because Money Needs Speed!
+[![PR Build Check](https://github.com/AlbertoBarrago/bank_be/actions/workflows/pr-build.yml/badge.svg)](https://github.com/AlbertoBarrago/bank_be/actions/workflows/pr-build.yml)
 
 ## Overview
 This is a blazingly fast banking service built with Fastify (thanks Matteo Collina! 🙌), implementing best practices and core Fastify features that'll make your transactions fly faster than your money does.

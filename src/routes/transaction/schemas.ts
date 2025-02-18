@@ -38,7 +38,7 @@ export const createTransactionSchema = {
   },
   security: [{ bearerAuth: [] }],
 };
-export const getTransactionSchema = {
+export const getTransactionsSchema = {
   tags: ["Transactions"],
   response: {
     200: Type.Array(TransactionSchema),

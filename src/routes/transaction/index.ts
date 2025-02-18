@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createTransactionSchema,
   deleteTransactionSchema,
-  getTransactionSchema,
+  getTransactionsSchema,
   updateTransactionSchema,
 } from "./schemas";
 import { TransactionHandlers } from "./handlers";
@@ -21,7 +21,7 @@ export default async function transactionRoutes(app: FastifyInstance) {
   );
   app.get(
     "/",
-    { schema: getTransactionSchema },
+    { schema: getTransactionsSchema },
     handlers.getUserTransactions.bind(handlers),
   );
   /*  app.put(

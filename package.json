@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
+    "type-check": "tsc --noEmit",
     "prestart": "npm run build",
     "start": "node dist/app.js",
     "dev": "ts-node-dev --respawn --ignore-watch .env --transpile-only src/app.ts",

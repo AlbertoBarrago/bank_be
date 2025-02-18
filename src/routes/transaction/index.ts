@@ -15,12 +15,12 @@ export default async function transactionRoutes(app: FastifyInstance) {
   const handlers = new TransactionHandlers(app);
 
   app.post(
-    "/",
+    "/create",
     { schema: createTransactionSchema },
     handlers.createTransaction.bind(handlers),
   );
   app.get(
-    "/",
+    "/list",
     { schema: getTransactionsSchema },
     handlers.getUserTransactions.bind(handlers),
   );

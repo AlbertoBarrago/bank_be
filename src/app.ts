@@ -5,7 +5,7 @@ import helmet from "@fastify/helmet";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 
 import { configureAuth } from "./plugins/auth";
-import { configureDb } from "./plugins/db";
+import { configureDb } from "./plugins/database";
 import { configureSwagger } from "./plugins/swagger";
 
 import authRoutes from "./routes/account";
@@ -15,6 +15,7 @@ import indexRoutes from "./routes/index";
 import { config } from "./config/config";
 import rateLimit from "./config/rate-limit";
 import cache from "./config/cache";
+import eventPlugin from "./plugins/event";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -32,29 +33,28 @@ export async function buildApp(): Promise<FastifyInstance> {
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  // Register plugins
   await app.register(fastifyJwt, {
     secret: config.jwt.secret,
   });
   await app.register(fastifyCors, {
     origin: config.cors.origin,
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
   await app.register(helmet);
   await app.register(rateLimit);
   await app.register(cache);
+  await app.register(eventPlugin);
 
-  // Configure custom plugins
   await configureSwagger(app);
   await configureAuth(app);
   await configureDb(app);
 
-  // Register routes
   await app.register(transactionRoutes, { prefix: "/api/v1/transactions" });
   await app.register(authRoutes, { prefix: "/api/v1/account" });
   await app.register(indexRoutes, { prefix: "/" });
 
-  // Global error handler
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
     reply.status(error.statusCode || 500).send({
@@ -67,7 +67,6 @@ export async function buildApp(): Promise<FastifyInstance> {
   return app;
 }
 
-// Start the server if this file is run directly
 if (require.main === module) {
   const start = async () => {
     try {
@@ -79,7 +78,5 @@ if (require.main === module) {
       process.exit(1);
     }
   };
-  start().then(() => {
-    console.log("We are on the road 🚀");
-  });
+  start();
 }

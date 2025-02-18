@@ -1,4 +1,5 @@
 # 🚀 Fastify Bank Service API because Money Needs Speed!
+[![PR Build Check](https://github.com/AlbertoBarrago/bank_be/actions/workflows/pr-build.yml/badge.svg)](https://github.com/AlbertoBarrago/bank_be/actions/workflows/pr-build.yml)
 
 ## Overview
 This is a blazingly fast banking service built with Fastify (thanks Matteo Collina! 🙌), implementing best practices and core Fastify features that'll make your transactions fly faster than your money does.
@@ -23,7 +24,6 @@ This is a blazingly fast banking service built with Fastify (thanks Matteo Colli
 - **CORS**: Playing nice with others (but not too nice)
 - **Input Validation**: Trust no input, validate everything
 - **SQL Injection Prevention**: No Bobby Tables allowed here
-- **API Key Management**: Keys to the kingdom, handled with care
 
 ### Banking-Specific Features (The Money Stuff 💰)
 - **Transaction Management**: ACID-compliant (not the kind you're thinking of)
@@ -31,8 +31,9 @@ This is a blazingly fast banking service built with Fastify (thanks Matteo Colli
 - **Payment Processing**: Moving digital money at Fastify speed
 - **Balance Inquiries**: Find out how much you haven't spent yet
 - **Transfer Services**: Like teleportation, but for money
-- **Audit Logging**: Because every penny has a story to tell
-- **Notification System**: We'll ping you faster than your mom on WhatsApp
+- TODO: Add more banking-specific features here
+- [ ] **Audit Logging**: Because every penny has a story to tell (to the IRS)
+- [ ] **Notification System**: We'll ping you faster than your mom on WhatsApp (to don't worry, we won't)
 
 ## Project Structure
 ```
@@ -43,7 +44,7 @@ fastify-bank-service/
 │   ├── plugins/
 │   │   ├── auth.ts
 │   │   ├── swagger.ts
-│   │   └── db.ts
+│   │   └── database.ts
 │   ├── routes/
 │   │   ├── account/
 │   │   │   ├── handlers.ts

@@ -5,7 +5,7 @@ fastify-bank-service/
 │   ├── plugins/
 │   │   ├── auth.ts
 │   │   ├── swagger.ts
-│   │   └── db.ts
+│   │   └── database.ts
 │   ├── routes/
 │   │   ├── account/
 │   │   │   ├── handlers.ts

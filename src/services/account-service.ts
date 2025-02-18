@@ -86,7 +86,7 @@ export class AccountService {
 
     this.app.cache.set(cacheKey, account, this.CACHE_TTL);
 
-    this.logger.debug(
+    this.logger.info(
       {
         action: "cache_set",
         accountId: id,
@@ -100,6 +100,12 @@ export class AccountService {
       },
       "Account retrieval request received",
     );
+
+    this.app.events.emit("account:created", {
+      id: account.id,
+      email: account.email,
+      timestamp: new Date(),
+    });
 
     return account;
   }
@@ -134,6 +140,7 @@ export class AccountService {
       },
       "Login initialized",
     );
+
     if (!account) {
       throw new AuthorizationError("User Not Found");
     }

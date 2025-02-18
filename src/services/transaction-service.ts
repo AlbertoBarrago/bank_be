@@ -5,7 +5,18 @@ import {
   FastifyTypeProviderDefault,
 } from "fastify";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { DatabaseError } from "../utils/errors";
+import {
+  BothRequiredError,
+  DatabaseError,
+  InsufficientFundsError,
+  InvalidTransactionError,
+  RecipientAccountIsRequiredError,
+  RecipientAccountNotFoundError,
+  SenderAccountNotFoundError,
+  SourceAccountNotFoundError,
+  TransactionNotFoundError,
+  UnauthorizedError,
+} from "../utils/errors";
 import { ResolveRequestBody } from "fastify/types/type-provider";
 import { Transaction } from "../routes/transaction/schemas";
 
@@ -32,11 +43,11 @@ export class TransactionService {
         });
 
         if (!fromAccount) {
-          throw new Error("Sender account not found");
+          throw new SenderAccountNotFoundError("Sender account not found");
         }
 
         if (data.type !== "deposit" && fromAccount.balance.lessThan(amount)) {
-          throw new Error("Insufficient funds");
+          throw new InsufficientFundsError("Insufficient funds");
         }
       }
 
@@ -46,7 +57,9 @@ export class TransactionService {
         });
 
         if (!toAccount) {
-          throw new Error("Recipient account not found");
+          throw new RecipientAccountNotFoundError(
+            "Recipient account not found",
+          );
         }
       }
 
@@ -67,7 +80,9 @@ export class TransactionService {
       switch (data.type) {
         case "deposit":
           if (!data.toAccountId) {
-            throw new Error("Recipient account is required for deposits");
+            throw new RecipientAccountIsRequiredError(
+              "Recipient account is required for deposits",
+            );
           }
           await tx.account.update({
             where: { id: data.toAccountId },
@@ -77,7 +92,9 @@ export class TransactionService {
 
         case "withdrawal":
           if (!data.fromAccountId) {
-            throw new Error("Source account is required for withdrawals");
+            throw new SourceAccountNotFoundError(
+              "Source account is required for withdrawals",
+            );
           }
           await tx.account.update({
             where: { id: data.fromAccountId },
@@ -87,7 +104,9 @@ export class TransactionService {
 
         case "transfer":
           if (!data.fromAccountId || !data.toAccountId) {
-            throw new Error("Both accounts are required for transfers");
+            throw new BothRequiredError(
+              "Both accounts are required for transfers",
+            );
           }
           await tx.account.update({
             where: { id: data.fromAccountId },
@@ -139,7 +158,7 @@ export class TransactionService {
         },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to get transaction: ${err}`);
+      throw new TransactionNotFoundError(`Failed to get transaction: ${err}`);
     }
   }
 
@@ -178,7 +197,7 @@ export class TransactionService {
         },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to update transaction: ${err}`);
+      throw new InvalidTransactionError(`Failed to update transaction: ${err}`);
     }
   }
 
@@ -199,7 +218,7 @@ export class TransactionService {
         },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to delete transaction: ${err}`);
+      throw new InvalidTransactionError(`Failed to delete transaction: ${err}`);
     }
   }
 }

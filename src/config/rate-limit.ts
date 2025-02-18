@@ -1,6 +1,11 @@
 import fastifyRateLimit from "@fastify/rate-limit";
 import { FastifyInstance } from "fastify";
 
+/**
+ * Rate limit middleware for Fastify.
+ * @module config/rate-limit
+ * @param app
+ */
 export default async function rateLimit(app: FastifyInstance) {
   await app.register(fastifyRateLimit, {
     global: false,

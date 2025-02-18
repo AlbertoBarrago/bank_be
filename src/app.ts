@@ -14,6 +14,7 @@ import indexRoutes from "./routes/index";
 
 import { config } from "./config/config";
 import rateLimit from "./config/rate-limit";
+import cache from "./config/cache";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -39,6 +40,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
   await app.register(helmet);
   await app.register(rateLimit);
+  await app.register(cache);
 
   // Configure custom plugins
   await configureSwagger(app);

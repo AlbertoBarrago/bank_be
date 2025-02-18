@@ -10,6 +10,7 @@ import { Account } from "../types";
 export class AccountService {
   private authService: AuthorizationService;
   private logger: FastifyBaseLogger;
+  private CACHE_TTL = 300;
 
   constructor(private app: FastifyInstance) {
     this.authService = new AuthorizationService(app);
@@ -67,10 +68,39 @@ export class AccountService {
   }
 
   async getAccount(id: string) {
+    const cacheKey = `account:${id}`;
+    const cached = this.app.cache.get(cacheKey);
+
+    if (cached) {
+      this.logger.info(
+        { action: "cache_hit", accountId: id },
+        "Account found in cache",
+      );
+      return cached;
+    }
     const account = await this.app.db.account.findUnique({ where: { id } });
+
     if (!account) {
       throw new NotFoundError("Account not found");
     }
+
+    this.app.cache.set(cacheKey, account, this.CACHE_TTL);
+
+    this.logger.debug(
+      {
+        action: "cache_set",
+        accountId: id,
+      },
+      "Account saved in cache",
+    );
+    this.logger.info(
+      {
+        action: "get_account",
+        accountId: id,
+      },
+      "Account retrieval request received",
+    );
+
     return account;
   }
 

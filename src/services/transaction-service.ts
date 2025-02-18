@@ -41,6 +41,14 @@ export class TransactionService {
     const maxAmount = new Prisma.Decimal(TransactionLimitEnum.MAX_AMOUNT);
     const decimalAmount = new Prisma.Decimal(amount);
 
+    this.logger.info({
+      action: "validate_transaction_amount",
+      amount,
+      minAmount,
+      maxAmount,
+      decimalAmount,
+    });
+
     if (
       decimalAmount.lessThan(minAmount) ||
       decimalAmount.greaterThan(maxAmount)

@@ -23,7 +23,10 @@ export async function buildApp(): Promise<FastifyInstance> {
       transport: {
         target: "pino-pretty",
         options: {
-          translateTime: "HH:MM:ss Z",
+          colorize: true,
+          levelFirst: true,
+          colorizeObjects: true,
+          translateTime: "UTC:yyyy-mm-dd HH:MM:ss.l",
           ignore: "pid,hostname",
         },
       },

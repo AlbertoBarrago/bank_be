@@ -49,3 +49,10 @@ export enum TransactionLimitEnum {
   MIN_AMOUNT = 0.01,
   MAX_AMOUNT = 10000,
 }
+
+export enum UserRole {
+  USER = "USER",
+  ADMIN = "ADMIN",
+  DIRECTOR = "DIRECTOR",
+  CEO = "CEO",
+}

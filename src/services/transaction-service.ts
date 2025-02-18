@@ -21,6 +21,7 @@ import {
   TransactionEnum,
   TransactionLimitEnum,
   TransactionTypeEnum,
+  UserRole,
 } from "../types";
 
 /**
@@ -181,12 +182,38 @@ export class TransactionService {
         where: {
           id,
         },
+        include: {
+          user: {
+            select: {
+              role: true,
+            },
+          },
+        },
       });
 
       this.logger.info({
         action: "get_user_transaction",
-        userAccount,
+        user: userAccount?.id,
+        role: userAccount?.user.role,
       });
+
+      if (
+        userAccount?.user.role === UserRole.CEO ||
+        userAccount?.user.role === UserRole.ADMIN
+      ) {
+        this.logger.info({
+          action: "get_user_transaction_ceo_admin",
+        });
+        return await this.db.transaction.findMany({
+          include: {
+            fromAccount: true,
+            toAccount: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      }
 
       return await this.db.transaction.findMany({
         where: {

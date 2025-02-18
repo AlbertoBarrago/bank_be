@@ -7,7 +7,6 @@ import {
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   BothRequiredError,
-  DatabaseError,
   InsufficientFundsError,
   InvalidTransactionError,
   RecipientAccountIsRequiredError,
@@ -15,10 +14,14 @@ import {
   SenderAccountNotFoundError,
   SourceAccountNotFoundError,
   TransactionNotFoundError,
-  UnauthorizedError,
 } from "../utils/errors";
 import { ResolveRequestBody } from "fastify/types/type-provider";
 import { Transaction } from "../routes/transaction/schemas";
+import {
+  TransactionEnum,
+  TransactionLimitEnum,
+  TransactionTypeEnum,
+} from "../types";
 
 /**
  * Handles requests to the transaction routes
@@ -33,14 +36,29 @@ export class TransactionService {
     this.logger = this.app.log.child({ service: "TransactionService" });
   }
 
+  private validateTransactionAmount(amount: number | string): Prisma.Decimal {
+    const minAmount = new Prisma.Decimal(TransactionLimitEnum.MIN_AMOUNT);
+    const maxAmount = new Prisma.Decimal(TransactionLimitEnum.MAX_AMOUNT);
+    const decimalAmount = new Prisma.Decimal(amount);
+
+    if (
+      decimalAmount.lessThan(minAmount) ||
+      decimalAmount.greaterThan(maxAmount)
+    ) {
+      throw new InvalidTransactionError("Amount outside allowed range");
+    }
+    return decimalAmount;
+  }
+
   async createTransaction(data: Transaction) {
     const amount = new Prisma.Decimal(data.amount);
-
     return this.db.$transaction(async (tx) => {
       if (data.fromAccountId) {
         const fromAccount = await tx.account.findUnique({
           where: { id: data.fromAccountId },
         });
+
+        this.validateTransactionAmount(data.amount);
 
         if (!fromAccount) {
           throw new SenderAccountNotFoundError("Sender account not found");
@@ -67,7 +85,7 @@ export class TransactionService {
         data: {
           amount,
           type: data.type,
-          status: "pending",
+          status: TransactionEnum.PENDING,
           fromAccountId: data.fromAccountId ?? null,
           toAccountId: data.toAccountId ?? null,
         },
@@ -78,7 +96,7 @@ export class TransactionService {
       });
 
       switch (data.type) {
-        case "deposit":
+        case TransactionTypeEnum.DEPOSIT:
           if (!data.toAccountId) {
             throw new RecipientAccountIsRequiredError(
               "Recipient account is required for deposits",
@@ -90,7 +108,7 @@ export class TransactionService {
           });
           break;
 
-        case "withdrawal":
+        case TransactionTypeEnum.WITHDRAWAL:
           if (!data.fromAccountId) {
             throw new SourceAccountNotFoundError(
               "Source account is required for withdrawals",
@@ -102,7 +120,7 @@ export class TransactionService {
           });
           break;
 
-        case "transfer":
+        case TransactionTypeEnum.TRANSFER:
           if (!data.fromAccountId || !data.toAccountId) {
             throw new BothRequiredError(
               "Both accounts are required for transfers",
@@ -132,7 +150,7 @@ export class TransactionService {
 
       return tx.transaction.update({
         where: { id: transaction.id },
-        data: { status: "completed" },
+        data: { status: TransactionEnum.COMPLETED },
         include: {
           fromAccount: true,
           toAccount: true,

@@ -32,9 +32,20 @@ export type Account = {
   status: string;
 };
 
-export enum StatusEnum {
+export enum TransactionEnum {
   ACTIVE = "active",
   PENDING = "pending",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
+}
+
+export enum TransactionTypeEnum {
+  DEPOSIT = "deposit",
+  WITHDRAWAL = "withdrawal",
+  TRANSFER = "transfer",
+}
+
+export enum TransactionLimitEnum {
+  MIN_AMOUNT = 0.01,
+  MAX_AMOUNT = 10000,
 }

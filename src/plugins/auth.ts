@@ -24,7 +24,7 @@ export async function configureAuth(app: FastifyInstance): Promise<void> {
         request.url.startsWith("/api") &&
         !publicPaths.some((path) => request.url.startsWith(path))
       ) {
-        await request.jwtVerify();
+        request.user = await request.jwtVerify();
       }
     } catch (err) {
       throw new AuthenticationError(`Invalid or expired token ${err}`);

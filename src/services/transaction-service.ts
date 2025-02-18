@@ -1,12 +1,27 @@
 import {
+  FastifyBaseLogger,
   FastifyInstance,
   FastifySchema,
   FastifyTypeProviderDefault,
 } from "fastify";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { DatabaseError } from "../utils/errors";
+import {
+  BothRequiredError,
+  InsufficientFundsError,
+  InvalidTransactionError,
+  RecipientAccountIsRequiredError,
+  RecipientAccountNotFoundError,
+  SenderAccountNotFoundError,
+  SourceAccountNotFoundError,
+  TransactionNotFoundError,
+} from "../utils/errors";
 import { ResolveRequestBody } from "fastify/types/type-provider";
 import { Transaction } from "../routes/transaction/schemas";
+import {
+  TransactionEnum,
+  TransactionLimitEnum,
+  TransactionTypeEnum,
+} from "../types";
 
 /**
  * Handles requests to the transaction routes
@@ -14,26 +29,51 @@ import { Transaction } from "../routes/transaction/schemas";
  */
 export class TransactionService {
   private db: PrismaClient;
+  private logger: FastifyBaseLogger;
 
   constructor(private app: FastifyInstance) {
     this.db = this.app.db;
+    this.logger = this.app.log.child({ service: "TransactionService" });
+  }
+
+  private validateTransactionAmount(amount: number | string): Prisma.Decimal {
+    const minAmount = new Prisma.Decimal(TransactionLimitEnum.MIN_AMOUNT);
+    const maxAmount = new Prisma.Decimal(TransactionLimitEnum.MAX_AMOUNT);
+    const decimalAmount = new Prisma.Decimal(amount);
+
+    this.logger.info({
+      action: "validate_transaction_amount",
+      amount,
+      minAmount,
+      maxAmount,
+      decimalAmount,
+    });
+
+    if (
+      decimalAmount.lessThan(minAmount) ||
+      decimalAmount.greaterThan(maxAmount)
+    ) {
+      throw new InvalidTransactionError("Amount outside allowed range");
+    }
+    return decimalAmount;
   }
 
   async createTransaction(data: Transaction) {
     const amount = new Prisma.Decimal(data.amount);
-
     return this.db.$transaction(async (tx) => {
       if (data.fromAccountId) {
         const fromAccount = await tx.account.findUnique({
           where: { id: data.fromAccountId },
         });
 
+        this.validateTransactionAmount(data.amount);
+
         if (!fromAccount) {
-          throw new Error("Sender account not found");
+          throw new SenderAccountNotFoundError("Sender account not found");
         }
 
         if (data.type !== "deposit" && fromAccount.balance.lessThan(amount)) {
-          throw new Error("Insufficient funds");
+          throw new InsufficientFundsError("Insufficient funds");
         }
       }
 
@@ -43,7 +83,9 @@ export class TransactionService {
         });
 
         if (!toAccount) {
-          throw new Error("Recipient account not found");
+          throw new RecipientAccountNotFoundError(
+            "Recipient account not found",
+          );
         }
       }
 
@@ -51,7 +93,7 @@ export class TransactionService {
         data: {
           amount,
           type: data.type,
-          status: "pending",
+          status: TransactionEnum.PENDING,
           fromAccountId: data.fromAccountId ?? null,
           toAccountId: data.toAccountId ?? null,
         },
@@ -62,9 +104,11 @@ export class TransactionService {
       });
 
       switch (data.type) {
-        case "deposit":
+        case TransactionTypeEnum.DEPOSIT:
           if (!data.toAccountId) {
-            throw new Error("Recipient account is required for deposits");
+            throw new RecipientAccountIsRequiredError(
+              "Recipient account is required for deposits",
+            );
           }
           await tx.account.update({
             where: { id: data.toAccountId },
@@ -72,9 +116,11 @@ export class TransactionService {
           });
           break;
 
-        case "withdrawal":
+        case TransactionTypeEnum.WITHDRAWAL:
           if (!data.fromAccountId) {
-            throw new Error("Source account is required for withdrawals");
+            throw new SourceAccountNotFoundError(
+              "Source account is required for withdrawals",
+            );
           }
           await tx.account.update({
             where: { id: data.fromAccountId },
@@ -82,9 +128,11 @@ export class TransactionService {
           });
           break;
 
-        case "transfer":
+        case TransactionTypeEnum.TRANSFER:
           if (!data.fromAccountId || !data.toAccountId) {
-            throw new Error("Both accounts are required for transfers");
+            throw new BothRequiredError(
+              "Both accounts are required for transfers",
+            );
           }
           await tx.account.update({
             where: { id: data.fromAccountId },
@@ -97,9 +145,20 @@ export class TransactionService {
           break;
       }
 
+      this.logger.info(
+        {
+          action: "create_transaction",
+          type: data.type,
+          fromAccountId: data.fromAccountId,
+          toAccountId: data.toAccountId,
+          amount: data.amount,
+        },
+        "New transaction creation request received",
+      );
+
       return tx.transaction.update({
         where: { id: transaction.id },
-        data: { status: "completed" },
+        data: { status: TransactionEnum.COMPLETED },
         include: {
           fromAccount: true,
           toAccount: true,
@@ -108,17 +167,46 @@ export class TransactionService {
     });
   }
 
-  async getTransactionById(id: string) {
+  async getUserTransactions(id: string) {
     try {
-      return await this.db.transaction.findUnique({
-        where: { id },
+      this.logger.info(
+        {
+          action: "get_user_transaction",
+          id,
+        },
+        "Transaction retrieval request received",
+      );
+
+      const userAccount = await this.db.account.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      this.logger.info({
+        action: "get_user_transaction",
+        userAccount,
+      });
+
+      return await this.db.transaction.findMany({
+        where: {
+          OR: [
+            { fromAccountId: userAccount?.id },
+            { toAccountId: userAccount?.id },
+          ],
+        },
         include: {
           fromAccount: true,
           toAccount: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to get transaction: ${err}`);
+      throw new TransactionNotFoundError(
+        `Failed to get User transactions: ${err}`,
+      );
     }
   }
 
@@ -134,6 +222,14 @@ export class TransactionService {
     >,
   ) {
     try {
+      this.logger.info(
+        {
+          action: "update_transaction",
+          id,
+          data,
+        },
+        "Transaction update request received",
+      );
       return await this.db.transaction.update({
         where: { id },
         data: {
@@ -149,12 +245,19 @@ export class TransactionService {
         },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to update transaction: ${err}`);
+      throw new InvalidTransactionError(`Failed to update transaction: ${err}`);
     }
   }
 
   async deleteTransaction(id: string) {
     try {
+      this.logger.info(
+        {
+          action: "delete_transaction",
+          id,
+        },
+        "Transaction deletion request received",
+      );
       return await this.db.transaction.delete({
         where: { id },
         include: {
@@ -163,7 +266,7 @@ export class TransactionService {
         },
       });
     } catch (err) {
-      throw new DatabaseError(`Failed to delete transaction: ${err}`);
+      throw new InvalidTransactionError(`Failed to delete transaction: ${err}`);
     }
   }
 }

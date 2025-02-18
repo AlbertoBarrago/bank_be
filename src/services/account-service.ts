@@ -1,18 +1,20 @@
-import { FastifyInstance } from "fastify";
+import { FastifyBaseLogger, FastifyInstance } from "fastify";
 import {
   AuthorizationError,
   DatabaseError,
   NotFoundError,
 } from "../utils/errors";
 import { AuthorizationService } from "./authorization-service";
-import { Account as PrismaAccount, Prisma } from "@prisma/client";
 import { Account } from "../types";
 
 export class AccountService {
   private authService: AuthorizationService;
+  private logger: FastifyBaseLogger;
+  private CACHE_TTL = 300;
 
   constructor(private app: FastifyInstance) {
     this.authService = new AuthorizationService(app);
+    this.logger = this.app.log.child({ service: "AccountService" });
   }
 
   async createAccount(
@@ -45,6 +47,17 @@ export class AccountService {
           updatedAt: true,
         },
       });
+
+      this.logger.info(
+        {
+          action: "create_account",
+          email: data.email,
+          name: data.name,
+          status: data.status,
+        },
+        "New account creation request received",
+      );
+
       return {
         ...account,
         balance: Number(account.balance),
@@ -54,15 +67,41 @@ export class AccountService {
     }
   }
 
-  async getAccount(id: string): Promise<Account> {
+  async getAccount(id: string) {
+    const cacheKey = `account:${id}`;
+    const cached = this.app.cache.get(cacheKey);
+
+    if (cached) {
+      this.logger.info(
+        { action: "cache_hit", accountId: id },
+        "Account found in cache",
+      );
+      return cached;
+    }
     const account = await this.app.db.account.findUnique({ where: { id } });
+
     if (!account) {
       throw new NotFoundError("Account not found");
     }
-    return {
-      ...account,
-      balance: Number(account.balance),
-    };
+
+    this.app.cache.set(cacheKey, account, this.CACHE_TTL);
+
+    this.logger.debug(
+      {
+        action: "cache_set",
+        accountId: id,
+      },
+      "Account saved in cache",
+    );
+    this.logger.info(
+      {
+        action: "get_account",
+        accountId: id,
+      },
+      "Account retrieval request received",
+    );
+
+    return account;
   }
 
   async login(
@@ -70,7 +109,7 @@ export class AccountService {
     password: string,
   ): Promise<{
     token: string;
-    account: Omit<PrismaAccount, "password">;
+    account: Omit<Account, "password">;
   }> {
     const account = await this.app.db.account.findUnique({
       where: { email },
@@ -86,8 +125,17 @@ export class AccountService {
       },
     });
 
+    this.logger.info(
+      {
+        action: "login",
+        email,
+        name: account?.name,
+        status: account?.status,
+      },
+      "Login initialized",
+    );
     if (!account) {
-      throw new AuthorizationError("Insufficient funds");
+      throw new AuthorizationError("User Not Found");
     }
 
     const isValid = await this.authService.verifyPassword(
@@ -105,8 +153,7 @@ export class AccountService {
       token,
       account: {
         ...accountWithoutPassword,
-        balance: new Prisma.Decimal(accountWithoutPassword.balance),
-        userId: "",
+        balance: Number(account.balance),
       },
     };
   }

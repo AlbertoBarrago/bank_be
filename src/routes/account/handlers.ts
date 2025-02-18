@@ -4,7 +4,7 @@ import {
   GetAccountBody,
   LoginBody,
   RegisterBody,
-  StatusEnum,
+  TransactionEnum,
 } from "../../types";
 
 /**
@@ -29,7 +29,7 @@ export class AuthHandlers {
       email: request.body.email,
       password: request.body.password,
       balance: request.body.balance,
-      status: StatusEnum.PENDING,
+      status: TransactionEnum.PENDING,
     });
     return reply.status(201).send(account);
   }

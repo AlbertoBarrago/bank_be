@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createTransactionSchema,
   deleteTransactionSchema,
-  getTransactionSchema,
+  getTransactionsSchema,
   updateTransactionSchema,
 } from "./schemas";
 import { TransactionHandlers } from "./handlers";
@@ -20,11 +20,11 @@ export default async function transactionRoutes(app: FastifyInstance) {
     handlers.createTransaction.bind(handlers),
   );
   app.get(
-    "/:id",
-    { schema: getTransactionSchema },
-    handlers.getTransactionById.bind(handlers),
+    "/",
+    { schema: getTransactionsSchema },
+    handlers.getUserTransactions.bind(handlers),
   );
-  app.put(
+  /*  app.put(
     "/:id",
     { schema: updateTransactionSchema },
     handlers.updateTransaction.bind(handlers),
@@ -33,5 +33,5 @@ export default async function transactionRoutes(app: FastifyInstance) {
     "/:id",
     { schema: deleteTransactionSchema },
     handlers.deleteTransaction.bind(handlers),
-  );
+  );*/
 }

@@ -18,7 +18,7 @@ export class TransactionHandlers {
     request: FastifyRequest<{ Body: CreateTransactionBody }>,
     reply: FastifyReply,
   ) {
-    const { type, amount, fromAccountId, toAccountId, status } = request.body;
+    const { type, amount, fromAccountId, toAccountId } = request.body;
 
     const transaction = await this.transactionsService.createTransaction({
       type,
@@ -39,19 +39,20 @@ export class TransactionHandlers {
     return reply.send(response);
   }
 
-  async getTransactionById(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply,
-  ) {
-    const transaction = await this.transactionsService.getTransactionById(
-      request.params.id,
-    );
+  async getUserTransactions(request: FastifyRequest, reply: FastifyReply) {
+    const { accountId } = request.user as { accountId: string };
 
-    if (!transaction) {
+    if (!accountId) {
+      return reply.status(401).send({ error: "Unauthorized" });
+    }
+    const transactions =
+      await this.transactionsService.getUserTransactions(accountId);
+
+    if (!transactions) {
       return reply.status(404).send({ error: "Transaction not found" });
     }
 
-    return reply.send(transaction);
+    return reply.send(transactions);
   }
 
   async updateTransaction(

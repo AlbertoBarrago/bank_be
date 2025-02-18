@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
  * Register Schema
  */
 export const registerSchema = {
-  tags: ["Authorization"],
+  tags: ["Registration"],
   body: Type.Object({
     name: Type.String(),
     email: Type.String({ format: "email" }),
@@ -95,7 +95,6 @@ export const getAccountSchema = {
       status: Type.String(),
       createdAt: Type.String(),
       updatedAt: Type.String(),
-      userId: Type.String(),
     }),
   },
 };

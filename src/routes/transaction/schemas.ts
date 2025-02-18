@@ -15,7 +15,10 @@ const TransactionStatus = Type.Union([
 ]);
 const TransactionSchema = Type.Object({
   type: TransactionType,
-  amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" }),
+  amount: Type.String({
+    pattern: "^[0-9]+(\\.[0-9]{1,2})?$",
+    examples: ["100.00"],
+  }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.Optional(Type.String({ format: "uuid" })),
 });
@@ -38,13 +41,10 @@ export const createTransactionSchema = {
   },
   security: [{ bearerAuth: [] }],
 };
-export const getTransactionSchema = {
+export const getTransactionsSchema = {
   tags: ["Transactions"],
-  params: Type.Object({
-    id: Type.String({ format: "uuid" }),
-  }),
   response: {
-    200: TransactionSchema,
+    200: Type.Array(TransactionSchema),
   },
   security: [{ bearerAuth: [] }],
 };

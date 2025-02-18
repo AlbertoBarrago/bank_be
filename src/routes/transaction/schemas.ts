@@ -15,7 +15,10 @@ const TransactionStatus = Type.Union([
 ]);
 const TransactionSchema = Type.Object({
   type: TransactionType,
-  amount: Type.String({ pattern: "^[0-9]+(\\.[0-9]{1,2})?$" }),
+  amount: Type.String({
+    pattern: "^[0-9]+(\\.[0-9]{1,2})?$",
+    examples: ["100.00"],
+  }),
   fromAccountId: Type.Optional(Type.String({ format: "uuid" })),
   toAccountId: Type.Optional(Type.String({ format: "uuid" })),
 });

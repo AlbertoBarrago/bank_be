@@ -58,6 +58,7 @@ export const loginSchema = {
         account: Type.Object(
           {
             id: Type.String(),
+            userId: Type.String(),
             name: Type.String(),
             email: Type.String(),
             balance: Type.Number(),

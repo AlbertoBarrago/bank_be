@@ -16,7 +16,7 @@ export default async function authTransaction(app: FastifyInstance) {
   );
   app.post("/login", { schema: loginSchema }, handlers.login.bind(handlers));
   app.get(
-    "/account/:id",
+    "/:id",
     { schema: getAccountSchema },
     handlers.getAccount.bind(handlers),
   );

@@ -9,5 +9,6 @@ declare module "fastify" {
     db: PrismaClient;
     cache: NodeCache;
     events: EventEmitter;
+    getTestToken: (accountId: string) => string;
   }
 }

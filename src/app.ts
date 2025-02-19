@@ -3,19 +3,20 @@ import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import helmet from "@fastify/helmet";
 import {TypeBoxTypeProvider} from "@fastify/type-provider-typebox";
-
-import {configureAuth} from "./plugins/auth";
-import {configureDb} from "./plugins/database";
-import {configureSwagger} from "./plugins/swagger";
-
 import authRoutes from "./routes/account";
 import transactionRoutes from "./routes/transaction";
 import indexRoutes from "./routes/index";
-import {configureEvents} from "./plugins/event";
+
+import {
+    configureAuth,
+    configureCache,
+    configureDb,
+    configureEvents,
+    configureSwagger,
+    configureRateLimit
+} from "./plugins";
 
 import {config} from "./config/config";
-import {configureCache} from "./plugins/cache";
-import configureRateLimit from "./plugins/rate-limit";
 
 export async function buildApp(): Promise<FastifyInstance> {
     const app = fastify({

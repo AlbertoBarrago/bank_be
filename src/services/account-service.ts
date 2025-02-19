@@ -74,12 +74,25 @@ export class AccountService {
     }
   }
 
-  async getAccount(id: string) {
+  async getAccount(accountId: string) {
+    const userAccount = await this.app.db.account.findFirst({
+      where: {
+        id: accountId,
+      },
+      include: {
+        user: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
     if (!this.app.cache) {
       this.app.cache = new NodeCache({ stdTTL: this.CACHE_TTL });
     }
-    const cacheKey = `account:${id}`;
+    const cacheKey = `account:${userAccount?.id}`;
     const cached = this.app.cache.get(cacheKey);
+    const id =userAccount?.id
 
     if (cached) {
       this.logger.info(
@@ -88,7 +101,7 @@ export class AccountService {
       );
       return cached;
     }
-    const account = await this.app.db.account.findUnique({ where: { id } });
+    const account = await this.app.db.account.findUnique({ where: { id }});
 
     if (!account) {
       throw new NotFoundError("Account not found");
@@ -96,13 +109,6 @@ export class AccountService {
 
     this.app.cache.set(cacheKey, account, this.CACHE_TTL);
 
-    this.logger.info(
-      {
-        action: "cache_set",
-        accountId: id,
-      },
-      "Account saved in cache",
-    );
     this.logger.info(
       {
         action: "get_account",
@@ -161,6 +167,13 @@ export class AccountService {
     const token = this.authService.generateToken(account.id);
 
     const { ...accountWithoutPassword } = account;
+
+    this.app.events.emit("account:login", {
+      id: account.id,
+      email: account.email,
+      timestamp: new Date(),
+    });
+
     return {
       token,
       account: {

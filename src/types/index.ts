@@ -63,3 +63,19 @@ export enum UserRole {
     DIRECTOR = "DIRECTOR",
     CEO = "CEO",
 }
+
+export interface MetricsCounter {
+    login: {
+        success: number
+        failure: number
+    }
+    accounts: {
+        created: number
+        updated: number
+    }
+    transactions: {
+        total: number
+        successful: number
+        failed: number
+    }
+}

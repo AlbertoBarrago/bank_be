@@ -19,7 +19,7 @@ test('account endpoints', async (t) => {
 
     token = loginResponse.json().token
     accountId = loginResponse.json().account.id
-    t.ok(token, 'should return a token')
+
     t.equal(loginResponse.statusCode, 200, 'should return 200')
     t.ok(loginResponse.json().token, 'should return a token')
     t.equal(loginResponse.json().account.email, 'test@example.com', 'should return the correct email')
@@ -28,10 +28,10 @@ test('account endpoints', async (t) => {
     t.equal(loginResponse.json().account.status, 'active', 'should return the correct status')
   })
 
-  await t.test('GET /account/:id - Access with user test', async (t) => {
+  await t.test('GET /account/user-data - Access with user test', async (t) => {
     const response = await app.inject({
       method: 'GET',
-      url: `api/v1/account/${accountId}`,
+      url: `api/v1/account/user-data`,
       headers: {
         Authorization: `Bearer ${token}`
       }

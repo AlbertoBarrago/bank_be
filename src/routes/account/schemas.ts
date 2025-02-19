@@ -85,9 +85,6 @@ export const loginSchema = {
 };
 export const getAccountSchema = {
   tags: ["Authorization"],
-  params: Type.Object({
-    id: Type.String({ format: "uuid" }),
-  }),
   response: {
     200: Type.Object({
       id: Type.String(),

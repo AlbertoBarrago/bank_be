@@ -47,7 +47,8 @@ export class AuthHandlers {
     request: FastifyRequest<{ Params: GetAccountBody }>,
     reply: FastifyReply,
   ) {
-    const account = await this.accountService.getAccount(request.params.id);
+    const { accountId } = request.user as { accountId: string };
+    const account = await this.accountService.getAccount(accountId);
     return reply.send(account);
   }
 }

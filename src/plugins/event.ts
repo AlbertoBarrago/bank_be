@@ -33,4 +33,7 @@ export async function events(app: FastifyInstance): Promise<void> {
         metricsCounter.transactions.total++
         metricsCounter.transactions.successful++
     })
+
+    app.get('/metrics', () => metricsCounter)
+
 }

@@ -1,9 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createTransactionSchema,
-  deleteTransactionSchema,
   getTransactionsSchema,
-  updateTransactionSchema,
 } from "./schemas";
 import { TransactionHandlers } from "./handlers";
 

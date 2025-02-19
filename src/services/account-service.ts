@@ -111,13 +111,6 @@ export class AccountService {
 
     this.logger.info(
       {
-        action: "cache_set",
-        accountId: id,
-      },
-      "Account saved in cache",
-    );
-    this.logger.info(
-      {
         action: "get_account",
         accountId: id,
       },
@@ -174,6 +167,13 @@ export class AccountService {
     const token = this.authService.generateToken(account.id);
 
     const { ...accountWithoutPassword } = account;
+
+    this.app.events.emit("account:login", {
+      id: account.id,
+      email: account.email,
+      timestamp: new Date(),
+    });
+
     return {
       token,
       account: {

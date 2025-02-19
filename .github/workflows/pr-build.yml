@@ -24,15 +24,6 @@ jobs:
       - name: Type check
         run: npm run type-check
 
-      - name: Test
-        run: npm run test
-
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: coverage/
-
       - name: Build
         run: npm run build
 

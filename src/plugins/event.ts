@@ -1,21 +1,36 @@
-import fp from "fastify-plugin";
-import EventEmitter from "node:events";
+import { FastifyInstance } from "fastify"
+import { EventEmitter } from "events"
 
-export default fp(
-  async function (fastify) {
-    const eventEmitter = new EventEmitter();
+interface MetricsCounter {
+  accounts: {
+    created: number
+    updated: number
+  }
+  transactions: {
+    total: number
+    successful: number
+    failed: number
+  }
+}
 
-    fastify.decorate("events", eventEmitter);
+export async function events(app: FastifyInstance): Promise<void> {
+    const eventEmitter = new EventEmitter()
+    const metricsCounter: MetricsCounter = {
+        accounts: {created: 0, updated: 0},
+        transactions: {total: 0, successful: 0, failed: 0}
+    }
+
+    app.decorate("events", eventEmitter)
+    app.decorate("metrics", metricsCounter)
 
     eventEmitter.on("account:created", (data) => {
-      fastify.log.info({ event: "account:created", data });
-    });
+        app.log.info({event: "account:created", data})
+        metricsCounter.accounts.created++
+    })
 
     eventEmitter.on("balance:changed", (data) => {
-      fastify.log.info({ event: "balance:changed", data });
-    });
-  },
-  {
-    name: "event-service",
-  },
-);
+        app.log.info({event: "balance:changed", data})
+        metricsCounter.transactions.total++
+        metricsCounter.transactions.successful++
+    })
+}

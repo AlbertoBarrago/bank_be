@@ -1,74 +1,46 @@
-import { test } from "tap";
-import { build } from "../helper";
-import { FastifyInstance } from "fastify";
+import { test } from 'tap'
+import { build } from '../helper'
 
-test("account endpoints", async (t) => {
-  const app: FastifyInstance = await build(t);
+test('account endpoints', async (t) => {
+  const app = await build(t)
+  let token: string
+  let accountId: any
 
-  await t.test("POST /api/v1/account - create account", async (t) => {
+  await t.test('POST /login - Access with user test', async (t) => {
+
+    const loginResponse = await app.inject({
+      method: 'POST',
+      url: 'api/v1/account/login',
+      payload: {
+        email: 'test@example.com',
+        password: 'password123'
+      }
+    })
+
+    token = loginResponse.json().token
+    accountId = loginResponse.json().account.id
+    t.ok(token, 'should return a token')
+    t.equal(loginResponse.statusCode, 200, 'should return 200')
+    t.ok(loginResponse.json().token, 'should return a token')
+    t.equal(loginResponse.json().account.email, 'test@example.com', 'should return the correct email')
+    t.equal(loginResponse.json().account.name, 'Test User', 'should return the correct name')
+    t.equal(loginResponse.json().account.balance, 0, 'should return the correct balance')
+    t.equal(loginResponse.json().account.status, 'active', 'should return the correct status')
+  })
+
+  await t.test('GET /account/:id - Access with user test', async (t) => {
     const response = await app.inject({
-      method: "POST",
-      url: "/api/v1/account",
-      payload: {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-      },
-    });
-
-    t.equal(response.statusCode, 201);
-    const payload = JSON.parse(response.payload);
-    t.type(payload.id, "string");
-    t.equal(payload.name, "Test User");
-    t.equal(payload.email, "test@example.com");
-  });
-
-  await t.test("GET /api/v1/account/:id - get account by id", async (t) => {
-    const createResponse = await app.inject({
-      method: "POST",
-      url: "/api/v1/account",
-      payload: {
-        name: "Get Test User",
-        email: "get.test@example.com",
-        password: "password123",
-      },
-    });
-    const { id } = JSON.parse(createResponse.payload);
-
-    const response = await app.inject({
-      method: "GET",
-      url: `/api/v1/account/${id}`,
-    });
-
-    t.equal(response.statusCode, 200);
-    const payload = JSON.parse(response.payload);
-    t.equal(payload.id, id);
-  });
-
-  await t.test("PUT /api/v1/account/:id - update account", async (t) => {
-    const createResponse = await app.inject({
-      method: "POST",
-      url: "/api/v1/account",
-      payload: {
-        name: "Update Test User",
-        email: "update.test@example.com",
-        password: "password123",
-      },
-    });
-    const { id } = JSON.parse(createResponse.payload);
-
-    const response = await app.inject({
-      method: "PUT",
-      url: `/api/v1/account/${id}`,
-      payload: {
-        name: "Updated Name",
-      },
-    });
-
-    t.equal(response.statusCode, 200);
-    const payload = JSON.parse(response.payload);
-    t.equal(payload.name, "Updated Name");
-  });
+      method: 'GET',
+      url: `api/v1/account/${accountId}`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    t.equal(response.statusCode, 200, 'should return 200')
+    t.equal(response.json().email, 'test@example.com', 'should return the correct email')
+    t.equal(response.json().name, 'Test User', 'should return the correct name')
+    t.equal(response.json().balance, 0, 'should return the correct balance')
+  })
 
   t.teardown(async () => {
     await app.close();

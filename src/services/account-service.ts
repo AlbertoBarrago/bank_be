@@ -5,7 +5,8 @@ import {
   NotFoundError,
 } from "../utils/errors";
 import { AuthorizationService } from "./authorization-service";
-import { Account } from "../types";
+import {Account, AccountEnum} from "../types";
+import NodeCache from "node-cache";
 
 export class AccountService {
   private authService: AuthorizationService;
@@ -28,7 +29,7 @@ export class AccountService {
           email: data.email,
           balance: data.balance,
           password: hashedPassword,
-          status: data.status,
+          status: AccountEnum.ACTIVE,
           user: {
             create: {
               name: data.name,
@@ -53,10 +54,16 @@ export class AccountService {
           action: "create_account",
           email: data.email,
           name: data.name,
-          status: data.status,
+          status: AccountEnum.ACTIVE,
         },
-        "New account creation request received",
+        "Creation of account initialized",
       );
+
+      this.app.events.emit("account:created", {
+        id: account.id,
+        email: account.email,
+        timestamp: new Date(),
+      });
 
       return {
         ...account,
@@ -68,6 +75,9 @@ export class AccountService {
   }
 
   async getAccount(id: string) {
+    if (!this.app.cache) {
+      this.app.cache = new NodeCache({ stdTTL: this.CACHE_TTL });
+    }
     const cacheKey = `account:${id}`;
     const cached = this.app.cache.get(cacheKey);
 
@@ -101,12 +111,6 @@ export class AccountService {
       "Account retrieval request received",
     );
 
-    this.app.events.emit("account:created", {
-      id: account.id,
-      email: account.email,
-      timestamp: new Date(),
-    });
-
     return account;
   }
 
@@ -121,6 +125,7 @@ export class AccountService {
       where: { email },
       select: {
         id: true,
+        userId: true,
         name: true,
         email: true,
         balance: true,

@@ -8,5 +8,4 @@
 - [x] Correct error handling
 - [x] Include caching layer for frequently accessed accounts
 - [x] Add transaction isolation levels for better concurrency control
-- [ ] Implement event emitting for account state changes
-- [ ] Add metrics collection for monitoring account operations
+- [x] Add a metrics collection for monitoring account operations with events

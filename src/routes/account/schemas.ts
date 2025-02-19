@@ -13,7 +13,6 @@ export const registerSchema = {
       description: "Account password",
       examples: ["******"],
     }),
-    balance: Type.Optional(Type.Number({ default: 0 })),
   }),
   response: {
     201: Type.Object({
@@ -59,6 +58,7 @@ export const loginSchema = {
         account: Type.Object(
           {
             id: Type.String(),
+            userId: Type.String(),
             name: Type.String(),
             email: Type.String(),
             balance: Type.Number(),

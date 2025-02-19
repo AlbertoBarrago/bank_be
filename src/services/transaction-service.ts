@@ -157,6 +157,12 @@ export class TransactionService {
         "New transaction creation request received",
       );
 
+      this.app.events.emit('balance:changed', {
+        accountId: data.fromAccountId,
+        amount: data.amount,
+        type: data.type
+      });
+
       return tx.transaction.update({
         where: { id: transaction.id },
         data: { status: TransactionEnum.COMPLETED },

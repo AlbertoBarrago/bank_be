@@ -55,8 +55,14 @@ export class AccountService {
           name: data.name,
           status: data.status,
         },
-        "New account creation request received",
+        "Creation of account initialized",
       );
+
+      this.app.events.emit("account:created", {
+        id: account.id,
+        email: account.email,
+        timestamp: new Date(),
+      });
 
       return {
         ...account,
@@ -100,12 +106,6 @@ export class AccountService {
       },
       "Account retrieval request received",
     );
-
-    this.app.events.emit("account:created", {
-      id: account.id,
-      email: account.email,
-      timestamp: new Date(),
-    });
 
     return account;
   }

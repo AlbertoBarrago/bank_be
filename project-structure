@@ -1,11 +1,15 @@
 fastify-bank-service/
 ├── src/
 │   ├── config/
-│   │   └── config.ts
+│   │   ├── config.ts
+│   │   └── cache.ts
 │   ├── plugins/
 │   │   ├── auth.ts
 │   │   ├── swagger.ts
-│   │   └── database.ts
+│   │   ├── database.ts
+│   │   ├── cache.ts
+│   │   ├── rate-limit.ts
+│   │   └── event.ts
 │   ├── routes/
 │   │   ├── account/
 │   │   │   ├── handlers.ts
@@ -17,7 +21,8 @@ fastify-bank-service/
 │   │       └── index.ts
 │   ├── services/
 │   │   ├── account-service.ts
-│   │   └── transaction-service.ts
+│   │   ├── transaction-service.ts
+│   │   └── authorization-service.ts
 │   ├── models/
 │   │   ├── account.model.ts
 │   │   └── transaction.model.ts
@@ -37,4 +42,4 @@ fastify-bank-service/
 │       └── handlers/
 ├── package.json
 ├── tsconfig.json
-└── docker-compose.yml 
+└── docker-compose.yml

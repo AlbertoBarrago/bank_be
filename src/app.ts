@@ -13,9 +13,9 @@ import transactionRoutes from "./routes/transaction";
 import indexRoutes from "./routes/index";
 
 import { config } from "./config/config";
-import rateLimit from "./config/rate-limit";
-import cache from "./config/cache";
-import eventPlugin from "./plugins/event";
+import rateLimit from "./plugins/rate-limit";
+import {events} from "./plugins/event";
+import {cache} from "./plugins/cache";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -44,8 +44,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   });
   await app.register(helmet);
   await app.register(rateLimit);
+  await app.register(events);
   await app.register(cache);
-  await app.register(eventPlugin);
 
   await configureSwagger(app);
   await configureAuth(app);

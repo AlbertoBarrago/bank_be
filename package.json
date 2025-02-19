@@ -48,5 +48,13 @@
     "tap": "^21.0.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
+  },
+  "tap": {
+    "reporter": "@tapjs/reporter",
+    "coverage": true,
+    "branches": 80,
+    "functions": 80,
+    "lines": 80,
+    "statements": 80
   }
 }

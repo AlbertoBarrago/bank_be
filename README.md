@@ -67,7 +67,7 @@ fastify-bank-service/
 │   └── app.ts
 ├── test/
 │   ├── integration/
-│   │   ├── account-test.ts
+│   │   ├── index.ts
 │   │   └── transaction.test.ts
 │   └── unit/
 │       ├── services/

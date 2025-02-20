@@ -9,3 +9,4 @@
 - [x] Include caching layer for frequently accessed accounts
 - [x] Add transaction isolation levels for better concurrency control
 - [x] Add a metrics collection for monitoring account operations with events
+- [x] Add test for transactions

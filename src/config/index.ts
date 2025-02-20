@@ -12,7 +12,7 @@ dotenv.config();
  * @property {string} cors - The origin for the CORS policy.
  * @property {string} logLevel - The log level for the application.
  */
-export const config = {
+export const index = {
   env: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3000"),
   host: process.env.HOST || "localhost",

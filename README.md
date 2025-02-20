@@ -38,8 +38,8 @@ This is a blazingly fast banking service built with Fastify (thanks Matteo Colli
 ```
 fastify-bank-service/
 ├── src/
-│   ├── config/
-│   │   └── config.ts
+│   ├── index/
+│   │   └── index.ts
 │   ├── plugins/
 │   │   ├── auth.ts
 │   │   ├── swagger.ts

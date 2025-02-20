@@ -16,12 +16,12 @@ import {
     configureRateLimit
 } from "./plugins";
 
-import {config} from "./config/config";
+import {index} from "./config";
 
 export async function buildApp(): Promise<FastifyInstance> {
     const app = fastify({
         logger: {
-            level: config.logLevel,
+            level: index.logLevel,
             transport: {
                 target: "pino-pretty",
                 options: {
@@ -35,10 +35,10 @@ export async function buildApp(): Promise<FastifyInstance> {
     }).withTypeProvider<TypeBoxTypeProvider>();
 
     await app.register(fastifyJwt, {
-        secret: config.jwt.secret,
+        secret: index.jwt.secret,
     });
     await app.register(fastifyCors, {
-        origin: config.cors.origin,
+        origin: index.cors.origin,
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
@@ -72,8 +72,8 @@ if (require.main === module) {
     const start = async () => {
         try {
             const app = await buildApp();
-            await app.listen({port: config.port, host: config.host});
-            app.log.info(`Server listening on ${config.port}`);
+            await app.listen({port: index.port, host: index.host});
+            app.log.info(`Server listening on ${index.port}`);
         } catch (err) {
             console.error(err);
             process.exit(1);

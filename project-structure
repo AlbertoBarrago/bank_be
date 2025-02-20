@@ -1,8 +1,7 @@
 fastify-bank-service/
 ├── src/
 │   ├── config/
-│   │   ├── config.ts
-│   │   └── cache.ts
+│   │   ├── index.ts
 │   ├── plugins/
 │   │   ├── auth.ts
 │   │   ├── swagger.ts
@@ -23,23 +22,16 @@ fastify-bank-service/
 │   │   ├── account-service.ts
 │   │   ├── transaction-service.ts
 │   │   └── authorization-service.ts
-│   ├── models/
-│   │   ├── account.model.ts
-│   │   └── transaction.model.ts
 │   ├── utils/
-│   │   ├── errors.ts
 │   │   └── logger.ts
 │   ├── types/
 │   │   ├── fastify.d.ts
 │   │   └── routes.ts
 │   └── app.ts
 ├── test/
+│   ├── helper.ts/
 │   ├── integration/
 │   │   ├── routes.ts
-│   │   └── transaction.test.ts
-│   └── unit/
-│       ├── services/
-│       └── handlers/
 ├── package.json
 ├── tsconfig.json
 └── docker-compose.yml

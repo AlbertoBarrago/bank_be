@@ -14,11 +14,11 @@ fastify-bank-service/
 │   │   ├── account/
 │   │   │   ├── handlers.ts
 │   │   │   ├── schemas.ts
-│   │   │   └── index.ts
+│   │   │   └── routes.ts
 │   │   └── transaction/
 │   │       ├── handlers.ts
 │   │       ├── schemas.ts
-│   │       └── index.ts
+│   │       └── routes.ts
 │   ├── services/
 │   │   ├── account-service.ts
 │   │   ├── transaction-service.ts
@@ -31,11 +31,11 @@ fastify-bank-service/
 │   │   └── logger.ts
 │   ├── types/
 │   │   ├── fastify.d.ts
-│   │   └── index.ts
+│   │   └── routes.ts
 │   └── app.ts
 ├── test/
 │   ├── integration/
-│   │   ├── index.ts
+│   │   ├── routes.ts
 │   │   └── transaction.test.ts
 │   └── unit/
 │       ├── services/

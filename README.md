@@ -48,11 +48,11 @@ fastify-bank-service/
 │   │   ├── account/
 │   │   │   ├── handlers.ts
 │   │   │   ├── schemas.ts
-│   │   │   └── index.ts
+│   │   │   └── routes.ts
 │   │   └── transaction/
 │   │       ├── handlers.ts
 │   │       ├── schemas.ts
-│   │       └── index.ts
+│   │       └── routes.ts
 │   ├── services/
 │   │   ├── account-service.ts
 │   │   └── transaction-service.ts
@@ -63,11 +63,11 @@ fastify-bank-service/
 │   │   ├── errors.ts
 │   │   └── logger.ts
 │   ├── types/
-│   │   └── index.ts
+│   │   └── routes.ts
 │   └── app.ts
 ├── test/
 │   ├── integration/
-│   │   ├── account-test.ts
+│   │   ├── routes.ts
 │   │   └── transaction.test.ts
 │   └── unit/
 │       ├── services/

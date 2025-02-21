@@ -16,8 +16,15 @@ export const index = {
   env: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3000"),
   host: process.env.HOST || "localhost",
+  rateLimit: {
+    global: process.env.RATE_LIMIT_MAX || 100,
+    transactions: process.env.RATE_LIMIT_MAX || 100,
+    accounts: process.env.RATE_LIMIT_MAX || 100,
+    timeWindow: process.env.RATE_LIMIT_TIMEWINDOW || 1,
+  },
   jwt: {
     secret: process.env.JWT_SECRET || "your-secret-key",
+    expiresIn: process.env.JWT_EXPIRES_IN || "24h",
   },
   db: {
     url: process.env.DATABASE_URL,

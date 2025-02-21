@@ -1,5 +1,6 @@
 import fastifyRateLimit from "@fastify/rate-limit";
 import { FastifyInstance } from "fastify";
+import {index as config} from ".././config";
 
 /**
  * Rate limit middleware for Fastify.
@@ -10,7 +11,7 @@ export default async function configureRateLimit(app: FastifyInstance) {
   await app.register(fastifyRateLimit, {
     global: false,
     max: 100,
-    timeWindow: "1 minute",
+    timeWindow: config.rateLimit.timeWindow,
   });
 
   app.addHook("onRoute", (routeOptions) => {
@@ -18,7 +19,7 @@ export default async function configureRateLimit(app: FastifyInstance) {
       routeOptions.config = {
         rateLimit: {
           max: 30,
-          timeWindow: "1 minute",
+          timeWindow: config.rateLimit.timeWindow,
         },
       };
     }
@@ -29,7 +30,7 @@ export default async function configureRateLimit(app: FastifyInstance) {
       routeOptions.config = {
         rateLimit: {
           max: 10,
-          timeWindow: "1 minute",
+          timeWindow: config.rateLimit.timeWindow,
         },
       };
     }

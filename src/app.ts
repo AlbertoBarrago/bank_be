@@ -6,6 +6,8 @@ import {TypeBoxTypeProvider} from "@fastify/type-provider-typebox";
 import authRoutes from "./routes/account";
 import transactionRoutes from "./routes/transaction";
 import indexRoutes from "./routes/index";
+import { join } from 'path';
+
 
 import {
     configureAuth,
@@ -16,12 +18,13 @@ import {
     configureRateLimit
 } from "./plugins";
 
-import {index} from "./config";
+import {index as config} from "./config";
+import fastifyStatic from "@fastify/static";
 
 export async function buildApp(): Promise<FastifyInstance> {
     const app = fastify({
         logger: {
-            level: index.logLevel,
+            level: config.logLevel,
             transport: {
                 target: "pino-pretty",
                 options: {
@@ -35,10 +38,10 @@ export async function buildApp(): Promise<FastifyInstance> {
     }).withTypeProvider<TypeBoxTypeProvider>();
 
     await app.register(fastifyJwt, {
-        secret: index.jwt.secret,
+        secret: config.jwt.secret,
     });
     await app.register(fastifyCors, {
-        origin: index.cors.origin,
+        origin: config.cors.origin,
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
@@ -65,6 +68,11 @@ export async function buildApp(): Promise<FastifyInstance> {
         });
     });
 
+    app.register(fastifyStatic, {
+        root: join(__dirname, 'public'),
+        prefix: '/'
+    });
+
     return app;
 }
 
@@ -72,8 +80,8 @@ if (require.main === module) {
     const start = async () => {
         try {
             const app = await buildApp();
-            await app.listen({port: index.port, host: index.host});
-            app.log.info(`Server listening on ${index.port}`);
+            await app.listen({port: config.port, host: config.host});
+            app.log.info(`Server listening on ${config.port}`);
         } catch (err) {
             console.error(err);
             process.exit(1);

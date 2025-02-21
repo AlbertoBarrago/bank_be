@@ -10,7 +10,7 @@ import {index as config} from ".././config";
 export default async function configureRateLimit(app: FastifyInstance) {
   await app.register(fastifyRateLimit, {
     global: false,
-    max: 100,
+    max: config.rateLimit.global as number,
     timeWindow: config.rateLimit.timeWindow,
   });
 
@@ -18,18 +18,14 @@ export default async function configureRateLimit(app: FastifyInstance) {
     if (routeOptions.path.includes("/accounts")) {
       routeOptions.config = {
         rateLimit: {
-          max: 30,
+          max: config.rateLimit.accounts as number,
           timeWindow: config.rateLimit.timeWindow,
         },
       };
-    }
-  });
-
-  app.addHook("onRoute", (routeOptions) => {
-    if (routeOptions.path.includes("/transactions")) {
+    } else if (routeOptions.path.includes("/transactions")) {
       routeOptions.config = {
         rateLimit: {
-          max: 10,
+          max: config.rateLimit.transactions as number,
           timeWindow: config.rateLimit.timeWindow,
         },
       };

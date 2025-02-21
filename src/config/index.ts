@@ -17,8 +17,10 @@ export const index = {
   port: parseInt(process.env.PORT || "3000"),
   host: process.env.HOST || "localhost",
   rateLimit: {
-    max: process.env.RATE_LIMIT_MAX || "100 minute",
-    timeWindow: process.env.RATE_LIMIT_TIMEWINDOW || "1 minute",
+    global: process.env.RATE_LIMIT_MAX || 100,
+    transactions: process.env.RATE_LIMIT_MAX || 100,
+    accounts: process.env.RATE_LIMIT_MAX || 100,
+    timeWindow: process.env.RATE_LIMIT_TIMEWINDOW || 1,
   },
   jwt: {
     secret: process.env.JWT_SECRET || "your-secret-key",

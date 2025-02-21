@@ -1,7 +1,6 @@
 # Build stage
 FROM node:20-alpine as builder
 
-
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/

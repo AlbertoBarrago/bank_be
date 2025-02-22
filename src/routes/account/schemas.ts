@@ -4,7 +4,7 @@ import { Type } from "@sinclair/typebox";
  * Register Schema
  */
 export const registerSchema = {
-  tags: ["Registration"],
+  tags: ["Account"],
   body: Type.Object({
     name: Type.String(),
     email: Type.String({ format: "email" }),
@@ -28,7 +28,7 @@ export const registerSchema = {
   },
 };
 export const loginSchema = {
-  tags: ["Authorization"],
+  tags: ["Account"],
   description: "Authenticate user and receive access token",
   body: Type.Object(
     {
@@ -57,15 +57,9 @@ export const loginSchema = {
         }),
         account: Type.Object(
           {
-            id: Type.String(),
-            userId: Type.String(),
             name: Type.String(),
             email: Type.String(),
-            balance: Type.Number(),
-            status: Type.String(),
             role: Type.Optional(Type.String()),
-            createdAt: Type.String(),
-            updatedAt: Type.String(),
           },
           {
             description: "User account information",
@@ -84,13 +78,10 @@ export const loginSchema = {
   },
 };
 export const getAccountSchema = {
-  tags: ["Authorization"],
+  tags: ["Account"],
   response: {
     200: Type.Object({
       id: Type.String(),
-      name: Type.String(),
-      email: Type.String(),
-      role: Type.Optional(Type.String()),
       balance: Type.Number(),
       status: Type.String(),
       createdAt: Type.String(),

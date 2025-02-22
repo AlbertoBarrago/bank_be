@@ -192,25 +192,18 @@ export class TransactionService {
         where: {
           id: accountId,
         },
-        include: {
-          user: {
-            select: {
-              role: true,
-            },
-          },
-        },
       });
 
       this.logger.info({
         action: "get_user_transaction",
         user: userAccount?.id,
-        role: userAccount?.user.role,
+        role: userAccount?.role,
       });
 
       // If the user is a CEO or an admin, return all transactions
       if (
-        userAccount?.user.role === UserRole.CEO ||
-        userAccount?.user.role === UserRole.ADMIN
+        userAccount?.role === UserRole.CEO ||
+        userAccount?.role === UserRole.ADMIN
       ) {
         this.logger.info({
           action: "get_user_transaction_ceo_admin",

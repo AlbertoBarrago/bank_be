@@ -1,6 +1,6 @@
 import fastifyRateLimit from "@fastify/rate-limit";
 import { FastifyInstance } from "fastify";
-import {index as config} from ".././config";
+import { index as config } from ".././config";
 
 /**
  * Rate limit middleware for Fastify.

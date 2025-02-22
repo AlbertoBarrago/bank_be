@@ -6,10 +6,10 @@ import configureRateLimit from "./rate-limit";
 import { configureSwagger } from "./swagger";
 
 export {
-    configureAuth,
-    configureCache,
-    configureDb,
-    configureEvents,
-    configureSwagger,
-    configureRateLimit,
-}
+  configureAuth,
+  configureCache,
+  configureDb,
+  configureEvents,
+  configureSwagger,
+  configureRateLimit,
+};

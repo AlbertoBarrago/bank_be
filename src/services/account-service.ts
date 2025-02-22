@@ -4,8 +4,8 @@ import {
   DatabaseError,
   NotFoundError,
 } from "../utils/errors";
-import { AuthorizationService } from "./authorization-service";
-import {Account, AccountEnum} from "../types";
+import { AuthorizationService } from "./common/authorization-service";
+import { Account, AccountEnum } from "../types";
 import NodeCache from "node-cache";
 
 export class AccountService {
@@ -92,7 +92,7 @@ export class AccountService {
     }
     const cacheKey = `account:${userAccount?.id}`;
     const cached = this.app.cache.get(cacheKey);
-    const id =userAccount?.id
+    const id = userAccount?.id;
 
     if (cached) {
       this.logger.info(
@@ -101,7 +101,7 @@ export class AccountService {
       );
       return cached;
     }
-    const account = await this.app.db.account.findUnique({ where: { id }});
+    const account = await this.app.db.account.findUnique({ where: { id } });
 
     if (!account) {
       throw new NotFoundError("Account not found");

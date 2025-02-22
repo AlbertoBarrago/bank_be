@@ -1,8 +1,5 @@
 import { FastifyInstance } from "fastify";
-import {
-  createTransactionSchema,
-  getTransactionsSchema,
-} from "./schemas";
+import { createTransactionSchema, getTransactionsSchema } from "./schemas";
 import { TransactionHandlers } from "./handlers";
 
 /**

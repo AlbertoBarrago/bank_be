@@ -1,7 +1,7 @@
 import { FastifyBaseLogger, FastifyInstance } from "fastify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { index as config } from "../config";
+import { index as config } from "../../config";
 
 export class AuthorizationService {
   private logger: FastifyBaseLogger;
@@ -39,6 +39,7 @@ export class AuthorizationService {
       },
       "Generating JWT",
     );
+    // @ts-ignore
     return jwt.sign({ accountId }, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn,
     });

@@ -19,6 +19,7 @@ import {
 
 import { index as config } from "./config";
 import fastifyStatic from "@fastify/static";
+import healthRoutes from "./routes/health";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = fastify({
@@ -36,26 +37,27 @@ export async function buildApp(): Promise<FastifyInstance> {
     },
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  await app.register(fastifyJwt, {
-    secret: config.jwt.secret,
-  });
+  await app.register(helmet);
   await app.register(fastifyCors, {
     origin: config.cors.origin,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   });
-  await app.register(helmet);
+  await app.register(fastifyJwt, {
+    secret: config.jwt.secret,
+  });
 
   await configureDb(app);
   await configureAuth(app);
-  await configureSwagger(app);
-  await configureRateLimit(app);
   await configureEvents(app);
+  await configureRateLimit(app);
   await configureCache(app);
+  await configureSwagger(app);
 
   await app.register(transactionRoutes, { prefix: "/api/v1/transactions" });
   await app.register(authRoutes, { prefix: "/api/v1/account" });
+  await app.register(healthRoutes, { prefix: "/api/health" });
   await app.register(indexRoutes, { prefix: "/" });
 
   app.setErrorHandler((error, request, reply) => {
@@ -72,6 +74,10 @@ export async function buildApp(): Promise<FastifyInstance> {
     prefix: "/",
   });
 
+  app.get("/health", async () => {
+    return { status: "ok", timestamp: new Date().toISOString() };
+  });
+
   return app;
 }
 
@@ -81,6 +87,18 @@ if (require.main === module) {
       const app = await buildApp();
       await app.listen({ port: config.port, host: config.host });
       app.log.info(`Server listening on ${config.port}`);
+
+      const handleShutdown = (app: FastifyInstance) => {
+        const signals = ["SIGINT", "SIGTERM"];
+        signals.forEach((signal) => {
+          process.on(signal, async () => {
+            await app.close();
+            process.exit(0);
+          });
+        });
+      };
+
+      handleShutdown(app);
     } catch (err) {
       console.error(err);
       process.exit(1);

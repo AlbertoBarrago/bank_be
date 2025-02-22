@@ -6,7 +6,7 @@ import { AuthHandlers } from "./handlers";
  * Register routes for the auth module
  * @param app
  */
-export default async function authTransaction(app: FastifyInstance) {
+export default async function accountTransaction(app: FastifyInstance) {
   const handlers = new AuthHandlers(app);
 
   app.post(
@@ -16,7 +16,7 @@ export default async function authTransaction(app: FastifyInstance) {
   );
   app.post("/login", { schema: loginSchema }, handlers.login.bind(handlers));
   app.get(
-    "/user-data",
+    "/user",
     { schema: getAccountSchema },
     handlers.getAccount.bind(handlers),
   );

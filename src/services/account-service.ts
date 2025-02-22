@@ -7,6 +7,7 @@ import {
 import { AuthorizationService } from "./common/authorization-service";
 import { Account, AccountEnum } from "../types";
 import NodeCache from "node-cache";
+import { Decimal } from "@prisma/client/runtime/client";
 
 export class AccountService {
   private authService: AuthorizationService;
@@ -30,13 +31,6 @@ export class AccountService {
           balance: data.balance,
           password: hashedPassword,
           status: AccountEnum.ACTIVE,
-          user: {
-            create: {
-              name: data.name,
-              email: data.email,
-              password: hashedPassword,
-            },
-          },
         },
         select: {
           id: true,
@@ -79,13 +73,6 @@ export class AccountService {
       where: {
         id: accountId,
       },
-      include: {
-        user: {
-          select: {
-            role: true,
-          },
-        },
-      },
     });
     if (!this.app.cache) {
       this.app.cache = new NodeCache({ stdTTL: this.CACHE_TTL });
@@ -125,13 +112,22 @@ export class AccountService {
     password: string,
   ): Promise<{
     token: string;
-    account: Omit<Account, "password">;
+    account: {
+      id: string;
+      name: string;
+      email: string;
+      balance: Decimal;
+      password: string;
+      status: string;
+      role: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    };
   }> {
     const account = await this.app.db.account.findUnique({
       where: { email },
       select: {
         id: true,
-        userId: true,
         name: true,
         email: true,
         balance: true,
@@ -139,6 +135,7 @@ export class AccountService {
         status: true,
         createdAt: true,
         updatedAt: true,
+        role: true,
       },
     });
 
@@ -147,7 +144,7 @@ export class AccountService {
         action: "login",
         email,
         name: account?.name,
-        status: account?.status,
+        status: account?.role,
       },
       "Login initialized",
     );
@@ -176,10 +173,7 @@ export class AccountService {
 
     return {
       token,
-      account: {
-        ...accountWithoutPassword,
-        balance: Number(account.balance),
-      },
+      account: accountWithoutPassword,
     };
   }
 }

@@ -42,15 +42,8 @@ export class TransactionHandlers {
   async getUserTransactions(request: FastifyRequest, reply: FastifyReply) {
     const { accountId } = request.user as { accountId: string };
 
-    if (!accountId) {
-      return reply.status(401).send({ error: "Unauthorized" });
-    }
     const transactions =
       await this.transactionsService.getUserTransactions(accountId);
-
-    if (!transactions) {
-      return reply.status(404).send({ error: "Transaction not found" });
-    }
 
     return reply.send(transactions);
   }
@@ -67,10 +60,6 @@ export class TransactionHandlers {
       request.body,
     );
 
-    if (!transaction) {
-      return reply.status(404).send({ error: "Transaction not found" });
-    }
-
     return reply.send(transaction);
   }
 
@@ -81,10 +70,6 @@ export class TransactionHandlers {
     const transaction = await this.transactionsService.deleteTransaction(
       request.params.id,
     );
-
-    if (!transaction) {
-      return reply.status(404).send({ error: "Transaction not found" });
-    }
 
     return reply.send(transaction);
   }

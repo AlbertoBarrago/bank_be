@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 
-export default async function indexRoutes(fastify: FastifyInstance) {
-  fastify.get("/", async (request, reply) => {
+export default async function indexRoutes(app: FastifyInstance) {
+  app.get("/", async (request, reply) => {
     reply.type("text/html").send(`
         <!DOCTYPE html>
         <html lang="en">

@@ -30,6 +30,7 @@ export type Account = {
   balance: number;
   password: string;
   status: string;
+  role?: string;
 };
 
 export enum AccountEnum {

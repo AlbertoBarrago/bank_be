@@ -14,10 +14,9 @@ model Account {
   password         String
   balance          Decimal       @default(0)
   status           String        @default("active")
+  role             String?       @default("USER")
   transactionsFrom Transaction[] @relation("TransactionFromAccount")
   transactionsTo   Transaction[] @relation("TransactionToAccount")
-  userId           String        @unique @default(uuid())
-  user             User          @relation(fields: [userId], references: [id])
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 }
@@ -33,13 +32,4 @@ model Transaction {
   toAccountId   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-}
-
-model User {
-  id       String    @id @default(uuid())
-  name     String
-  email    String    @unique
-  password String
-  role     String?   @default("USER")
-  accounts Account[]
 }

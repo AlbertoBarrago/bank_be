@@ -6,6 +6,7 @@ import {
 } from "fastify";
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
+  AccountNotFoundError,
   BothRequiredError,
   InsufficientFundsError,
   InvalidTransactionError,
@@ -174,19 +175,22 @@ export class TransactionService {
     });
   }
 
-  async getUserTransactions(id: string) {
+  async getUserTransactions(accountId: string) {
+    if (!accountId) {
+      throw new AccountNotFoundError("Account not found");
+    }
     try {
       this.logger.info(
         {
           action: "get_user_transaction",
-          id,
+          id: accountId,
         },
         "Transaction retrieval request received",
       );
 
       const userAccount = await this.db.account.findFirst({
         where: {
-          id,
+          id: accountId,
         },
         include: {
           user: {
@@ -203,6 +207,7 @@ export class TransactionService {
         role: userAccount?.user.role,
       });
 
+      // If the user is a CEO or an admin, return all transactions
       if (
         userAccount?.user.role === UserRole.CEO ||
         userAccount?.user.role === UserRole.ADMIN
@@ -221,6 +226,7 @@ export class TransactionService {
         });
       }
 
+      // If the user is a regular user, return only their transactions
       return await this.db.transaction.findMany({
         where: {
           OR: [

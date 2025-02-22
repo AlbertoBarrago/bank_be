@@ -33,6 +33,12 @@ export class AuthorizationError extends AppError {
   }
 }
 
+export class AccountNotFoundError extends AppError {
+  constructor(message: string) {
+    super(message, 401);
+  }
+}
+
 /** Transaction errors
  * @description These errors are thrown when there is a problem with the transaction
  */

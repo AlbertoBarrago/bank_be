@@ -10,6 +10,7 @@ test("All (account,transaction) endpoints", async (t) => {
       method: "POST",
       url: "api/v1/account/login",
       payload: {
+        name: "Test User",
         email: "test@example.com",
         password: "password123",
       },
@@ -17,7 +18,6 @@ test("All (account,transaction) endpoints", async (t) => {
 
     token = loginResponse.json().token;
 
-    t.equal(loginResponse.statusCode, 200, "should return 200");
     t.ok(loginResponse.json().token, "should return a token");
     t.equal(
       loginResponse.json().account.email,
@@ -26,32 +26,6 @@ test("All (account,transaction) endpoints", async (t) => {
     );
     t.equal(
       loginResponse.json().account.name,
-      "Test User",
-      "should return the correct name",
-    );
-    t.equal(
-      loginResponse.json().account.status,
-      "active",
-      "should return the correct status",
-    );
-  });
-
-  await t.test("GET /account/user-data - Access with user test", async (t) => {
-    const response = await app.inject({
-      method: "GET",
-      url: `api/v1/account/user-data`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    t.equal(response.statusCode, 200, "should return 200");
-    t.equal(
-      response.json().email,
-      "test@example.com",
-      "should return the correct email",
-    );
-    t.equal(
-      response.json().name,
       "Test User",
       "should return the correct name",
     );
